@@ -1,0 +1,110 @@
+﻿@{
+    string badge = Session["BadgeId"].ToString();
+    string profileImg = badge + ".jpg";
+}
+<!-- Navbar -->
+<nav id="topNav" class="main-header navbar navbar-expand-md navbar-light">
+    <div class="container">
+        <div class="mr-auto">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="/Home/Index" class="navbar-brand">
+                        @*<img src="~/Media/CompanyImages/cladteklogonew.png" alt="Cladtek Logo" class="brand-image" style="opacity: .8">*@
+                        <span class="brand-text font-weight-bold">Task Log</span>
+                    </a>
+                </li>
+                @*<li class="nav-item">
+                        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    </li>*@
+            </ul>
+        </div>
+
+        <!-- Right navbar links -->
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <div class="nav-link" title="Dark mode toggle">
+                    <div class="custom-control custom-switch custom-switch-off-light custom-switch-on-success">
+                        <input type="checkbox" class="custom-control-input" id="swDarkmode">
+                        <label class="custom-control-label" for="swDarkmode" style="cursor: pointer"></label>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item dropdown" @(string.IsNullOrWhiteSpace(badge) ? "hidden" : "")>
+                <a class="nav-link" data-toggle="dropdown" href="#" title="User Profile">
+                    <span class="font-weight-bolder">@Session["FullName"]</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    @*<a href="/Home/UserProfile" class="dropdown-item" title="Profile setting">*@
+                    <a href="#" id="btnEditProfile"  class="dropdown-item" title="Profile setting">
+                        <span class="float-right text-muted text-sm"><i class="fas fa-user-edit"></i></span>
+                        <span class="font-weight-normal">@Session["BadgeId"] - @Session["FullName"]</span>
+                        <br />
+                        <span class="font-weight-lighter">@Session["Title"]</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" id="btnLogout" class="dropdown-item" title="Log out">
+                        Logout
+                        <span class="float-right text-muted text-sm"><i class="fas fa-sign-out-alt"></i></span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                </div>
+            </li>
+            <!--<li class="nav-item">
+                <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+                    <i class="fas fa-th-large"></i>
+                </a>
+            </li>-->
+        </ul>
+    </div>
+</nav>
+<div id="mdlEditProfile">
+
+</div>
+<!-- /.navbar -->
+<script>
+    $('#swDarkmode').change(function () {
+        let status = $(this).prop('checked');
+        if (status) {
+            $('body').addClass('dark-mode')
+            $('#topNav').removeClass('navbar-light')
+            $('#topNav').addClass('navbar-dark')
+            $('#leftNav').removeClass('sidebar-light-cyan')
+            $('#leftNav').addClass('sidebar-dark-white')
+            setCookie('darkmode', 'true', 365);
+        } else {
+            $('body').removeClass('dark-mode')
+            $('#topNav').removeClass('navbar-dark')
+            $('#topNav').addClass('navbar-light')
+            $('#leftNav').removeClass('sidebar-dark-white')
+            $('#leftNav').addClass('sidebar-light-cyan')
+            setCookie('darkmode', 'false', 365);
+        }
+    });
+
+    $('#swDarkmode').prop('checked', getCookie('darkmode') == 'true').trigger('change');
+
+    $('#btnLogout').on('click', () => {
+        $.post('@Url.Action("Logout", "Login")', {}, (res) => {
+            if (res.flag == 'success') {
+                notify(res.msg + '\n' + 'Please wait...', res.flag);
+                setTimeout(function () {
+                    window.location.href = res.url;
+                }, 2000);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    });
+
+    $('#btnEditProfile').on('click', () => {
+        $.get('@Url.Action("Edit", "Account")', { user: '@Session["Username"]' }, (res) => {
+            if (!res.flag) {
+                $('#mdlEditProfile').html(res);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    });
+</script>

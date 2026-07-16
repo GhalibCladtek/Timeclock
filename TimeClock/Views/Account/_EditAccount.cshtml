@@ -1,0 +1,111 @@
+﻿@model TimeClock.Models.TblUsers
+<div class="modal fade" id="modalEditProfile" style="display: none;" aria-hidden="true">
+    <form id="formEditProfile">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Profile</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="username" class="col-4 col-form-label">Username</label>
+                            <div class="col-8">
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Username" readonly required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="badgeId" class="col-4 col-form-label">Badge ID</label>
+                            <div class="col-8">
+                                <input type="text" class="form-control" id="badgeId" name="badgeId" placeholder="Badge ID" readonly required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="fullName" class="col-4 col-form-label">Full Name</label>
+                            <div class="col-8">
+                                <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Full Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="title" class="col-4 col-form-label">Title</label>
+                            <div class="col-8">
+                                <input type="text" class="form-control" id="title" name="title" placeholder="Title" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="password" class="col-4 col-form-label">New Password (If want to change password)</label>
+                            <div class="col-8">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" minlength="4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </form>
+    <!-- /.modal-dialog -->
+</div>
+<script>
+    $(document).ready(function () {
+        $("#formEditProfile #username").val('@Model.username');
+        $("#formEditProfile #badgeId").val('@Model.badgeId');
+        $("#formEditProfile #fullName").val('@Model.fullName');
+        $("#formEditProfile #title").val('@Model.title');
+
+        $('#modalEditProfile').modal('show');
+        $("#formEditProfile").validate({
+            errorClass: "text-danger", // Makes the text red
+            errorElement: "small",     // Uses a small tag for the error message
+            highlight: function (element) {
+                $(element).addClass("is-invalid"); // Adds red border to input
+            },
+            unhighlight: function (element) {
+                $(element).removeClass("is-invalid"); // Removes red border
+            }
+        });
+    });
+
+    $("#formEditProfile").on("submit", function (e) {
+        e.preventDefault(); // Stop standard page reload
+
+        // 3. Trigger the actual validation check!
+        if ($(this).valid()) {
+
+            // If it passes, disable the button to prevent double-clicks
+            let $btn = $("#formEditProfile #btnSubmit");
+            let originalText = $btn.text();
+            $btn.prop("disabled", true).text("Saving...");
+
+            let user = {};
+            $("#formEditProfile input").each((a, b) => {
+                user[b.id] = b.value;
+            });
+            
+            $.post('@Url.Action("Edit")', { user: user }, (res) => {
+                notify(res.msg, res.flag);
+                if (res.flag == "success") {
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    $btn.prop("disabled", false).text(originalText);
+                    console.log(res.data);
+                }
+            }).fail(() => {
+                notify("Failed when saving profile.", "error");
+                $btn.prop("disabled", false).text(originalText);
+            });
+        } else {
+            // The form is invalid. The plugin will automatically show the red labels!
+            notify("Please fill out all required fields.", "warning");
+        }
+    });
+</script>

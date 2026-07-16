@@ -1,0 +1,25 @@
+## Build Folders
+bin/
+obj/
+
+## Visual Studio Local Settings
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+## NuGet Packages
+packages/
+!packages/repositories.config
+
+## Publish Profiles (Keeps passwords safe)
+*.pubxml.user
+
+## Local Databases & Uploads
+App_Data/**/*.mdf
+App_Data/**/*.ldf
+App_Data/Attachments/*
+
+## Mac system files (If anyone views the project on a Mac)
+.DS_Store

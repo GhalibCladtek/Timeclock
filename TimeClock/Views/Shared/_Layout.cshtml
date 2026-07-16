@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title | Task Log</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="~/adminlte/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/adminlte/dist/css/adminlte.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="~/adminlte/plugins/sweetalert2/sweetalert2.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="~/adminlte/plugins/toastr/toastr.min.css">
+    <!-- Date Range Picker -->
+    <link rel="stylesheet" href="~/adminlte/plugins/daterangepicker/daterangepicker.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/adminlte/plugins/select2/css/select2.min.css">
+    <!-- Flatpickr - Lightweight Date or Time Picker -->
+    <link rel="stylesheet" href="~/adminlte/plugins/flatpickr/flatpickr.min.css">
+
+
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="~/adminlte/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/adminlte/dist/js/adminlte.min.js"></script>
+    <!-- Moment Js -->
+    <script src="~/adminlte/plugins/moment/moment.min.js"></script>
+    <!-- Sweetalert -->
+    <script src="~/adminlte/plugins/sweetalert2/sweetalert2.js"></script>
+    <!-- Toastr -->
+    <script src="~/adminlte/plugins/toastr/toastr.min.js"></script>
+    <!-- Date Range Picker -->
+    <script src="~/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Select2 -->
+    <script src="~/adminlte/plugins/select2/js/select2.min.js"></script>
+    <!-- Flatpickr - Lightweight Date or Time Picker -->
+    <script src="~/adminlte/plugins/flatpickr/flatpickr.js"></script>
+    <!-- Cookies Handler -->
+    <script src="~/Scripts/CookieMaster.js"></script>
+    <!-- jQuery Validator -->
+    <script src="~/adminlte/plugins/jquery-validation/jquery.validate.js"></script>
+
+    <!-- Loading css -->
+    <style>
+        .loader {
+            width: 40px;
+            height: 40px;
+            --c: no-repeat linear-gradient(#85c1f3 0 0);
+            background: var(--c),var(--c),var(--c),var(--c);
+            background-size: 21px 21px;
+            animation: l5 1.5s infinite cubic-bezier(0.3,1,0,1);
+            position: absolute;
+            position: fixed;
+            z-index: 99999;
+            margin: auto;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        @@keyframes l5 {
+            0% {
+                background-position: 0 0,100% 0,100% 100%,0 100%
+            }
+
+            33% {
+                background-position: 0 0,100% 0,100% 100%,0 100%;
+                width: 60px;
+                height: 60px
+            }
+
+            66% {
+                background-position: 100% 0,100% 100%,0 100%,0 0;
+                width: 60px;
+                height: 60px
+            }
+
+            100% {
+                background-position: 100% 0,100% 100%,0 100%,0 0
+            }
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            opacity: 0.5;
+            z-index: 99990;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #007bff;
+            border-color: #006fe6;
+        }
+    </style>
+    
+</head>
+<body class="hold-transition sidebar-collapse layout-top-nav">
+    <div class="loading" style="display:none;">
+        <div class="loader"></div>
+    </div>
+    <div class="wrapper">
+        @Html.Partial("~/Views/Shared/_TopNavBar.cshtml")
+
+        @RenderBody()
+
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-inline">
+                Task Log - Automation and Design Department
+            </div>
+            <strong>Copyright &copy; @DateTime.Now.Year PEPP Department.</strong> All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("input[type=text]").keyup(function () {
+                $(this).val($(this).val().toUpperCase());
+            });
+
+            //var $message = $('#notify').text();
+            //var $type = $('#notify').data('type');
+            //if ($message.length > 0) {
+            //    notify($message, $type);
+            //}
+
+            if ('@TempData["message"]'.trim()) {
+                let type = '@TempData["code"]'.trim() ?? 'info';
+                notify('@TempData["message"]', type);
+            }
+
+        }).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+        });
+
+        function jAlert(msg, title, callback = null) {
+            if (title === undefined) {
+                Swal.fire({
+                    title: msg,
+                    customClass: {
+                        confirmButton: "btn btn-success",
+                    },
+                    buttonsStyling: false
+                }).then((res) => {
+                    if (callback != null) {
+                        callback();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: title,
+                    text: msg,
+                    customClass: {
+                        confirmButton: "btn btn-success",
+                    },
+                    buttonsStyling: false
+                }).then((res) => {
+                    if (callback != null) {
+                        callback();
+                    }
+                });
+            }
+        }
+
+        function jConfirm(msg, title, callback) {
+            msg = msg.replaceAll('\n', '<br>');
+            Swal.fire({
+                title: title,
+                html: msg,
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+            }).then((result) => {
+                if (callback != null) {
+                    callback(result.isConfirmed);
+                } else {
+                    return result;
+                }
+            });
+        }
+
+        function notify(msg, type) {
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+            if (type == 'success') {
+                toastr["success"](msg);
+            } else if (type == 'warning') {
+                toastr["warning"](msg);
+            } else if (type == 'error' || type == 'failed') {
+                toastr["error"](msg);
+            } else {
+                toastr["info"](msg);
+            }
+        }
+    </script>
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

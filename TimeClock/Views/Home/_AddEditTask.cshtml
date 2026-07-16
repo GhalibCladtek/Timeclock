@@ -1,0 +1,148 @@
+﻿@model TimeClock.Models.TblTaskBySuperior
+<!-- modal -->
+<div class="modal fade" id="modalCreateTask" style="display: none;" aria-hidden="true">
+    <form id="formCreateTask">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Project</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @Html.HiddenFor(x=> x.Id, new { @class= "taskinput" })
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="title" class="col-4 col-form-label">Title</label>
+                            <div class="col-8">
+                                <input type="text" class="form-control taskinput" id="title" name="title" placeholder="Title" required value="@Model.title">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="description" class="col-4 col-form-label">Description</label>
+                            <div class="col-8">
+                                @Html.TextAreaFor(x=> x.description, new { @type="text", @class="form-control taskinput", @id="description", @name="description", @placeholder="Description", @required="required"  })
+                                @*<textarea type="text" class="form-control taskinput" id="description" name="description" placeholder="Description" required ></textarea>*@
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="dueDate" class="col-4 col-form-label">Due Date</label>
+                            <div class="col-8">
+                                <input type="text" class="form-control taskinput datepick" id="dueDate" name="dueDate" placeholder="dd/MM/yyyy" required  value="@(Model.dueDate?.ToString("yyyy-MM-dd"))">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="workersId" class="col-4 col-form-label">Assigned Person</label>
+                            <div class="col-8">
+                                <select multiple="multiple" type="text" class="form-control taskinput select2-purple" id="workersId" name="workersId" placeholder="Choose task member" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </form>
+    <!-- /.modal-dialog -->
+</div>
+<script>
+
+    $(document).ready(() => {
+        $('.datepick').flatpickr({
+            altInput: true,
+            altFormat: "j M Y",
+            dateFormat: "Y-m-d",
+            @Html.Raw(Model.Id <= 0 ? "minDate: \"today\"" : "minDate: '"+ Model.dueDate.Value.ToString("yyyy-MM-dd") + "'")
+        });
+
+        $("#formCreateTask").validate({
+            errorClass: "text-danger", // Makes the text red
+            errorElement: "small",     // Uses a small tag for the error message
+            highlight: function (element) {
+                $(element).addClass("is-invalid"); // Adds red border to input
+            },
+            unhighlight: function (element) {
+                $(element).removeClass("is-invalid"); // Removes red border
+            }
+        });
+
+        $('#workersId').select2({
+            closeOnSelect: false,       // Keeps dropdown open for quick multiple choices
+            placeholder: "Assign people...",
+            allowClear: true            // Shows an "x" icon to clear all choices
+        });
+
+        $('#modalCreateTask').modal('show');
+
+    });
+
+    $("#formCreateTask").on("submit", function (e) {
+        e.preventDefault(); // Stop standard page reload
+
+        // 3. Trigger the actual validation check!
+        if ($(this).valid()) {
+
+            // If it passes, disable the button to prevent double-clicks
+            let $btn = $("#formCreateTask #btnSubmit");
+            let originalText = $btn.text();
+            $btn.prop("disabled", true).text("Saving...");
+
+            let taskForm = {};
+            $("#formCreateTask .taskinput").each((a, b) => {
+                taskForm[b.id] = b.value;
+            });
+
+            taskForm["workers"] = $("#formCreateTask #workersId").val();
+
+            $.post('@Url.Action("CreateEditMainTask")', taskForm, (res) => {
+                notify(res.msg, res.flag);
+                if (res.flag == "success") {
+                    $('#modalCreateTask').modal('hide');
+                    setTimeout(function () {
+                        getSummaryTask();
+                    }, 1500);
+                } else {
+                    $btn.prop("disabled", false).text(originalText);
+                    console.log(res.data);
+                }
+            }).fail(() => {
+                notify("Failed when creating task.", "error");
+                $btn.prop("disabled", false).text(originalText);
+            });
+        } else {
+            // The form is invalid. The plugin will automatically show the red labels!
+            notify("Please fill out all required fields.", "warning");
+        }
+    });
+
+    $('#modalCreateTask').on('shown.bs.modal', function (e) {
+        getWorkerList();
+    });
+
+    function getWorkerList() {
+        $.get('@Url.Action("GetWorkerList")', {}, function (res) {
+            if (res.flag == "success") {
+                var $select = $('#workersId');
+                let curWorkers = '@Model.workersId';
+                res.data.forEach(function (worker) {
+                    var opt = new Option(worker.fullName, worker.badgeId + ' - ' + worker.fullName, false, curWorkers.includes(worker.badgeId + ' - ' + worker.fullName));
+                    $select.append(opt);
+                });
+                $select.trigger('change');
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        }).fail(function () {
+            notify('Failed when getting worker list.', 'error');
+        });
+    }
+
+
+</script>

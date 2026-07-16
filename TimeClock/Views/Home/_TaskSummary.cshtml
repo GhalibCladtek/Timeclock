@@ -1,0 +1,181 @@
+﻿@*@model IEnumerable<TimeClock.Models.TblTaskBySuperior>*@
+@model IEnumerable<TimeClock.Models.TaskView>
+@{
+    string[] timeRemain(DateTime? dt, string status)
+    {
+        // 1. Handle null dates safely
+        if (!dt.HasValue)
+        {
+            return new string[] { "", "-" };
+        }
+
+        // 2. Check if the task is already finished (Code "b")
+        // This catches finished tasks before we even worry about the deadline
+        if (string.Equals(status, "finish", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(status, "done", StringComparison.OrdinalIgnoreCase))
+        {
+            return new string[] { "text-success", "Done" };
+        }
+
+        // 3. Calculate remaining days for unfinished tasks
+        int daysRemaining = (dt.Value.Date - DateTime.Today).Days;
+
+        // 4. DUE DATE HAS PASSED and NOT finished (Code "c")
+        if (daysRemaining < 0)
+        {
+            return new string[] { "text-danger", $"Delayed {Math.Abs(daysRemaining)} days" };
+        }
+
+        // 5. DUE DATE IS TODAY / NEAR DEADLINE (Code "d")
+        if (daysRemaining == 0)
+        {
+            return new string[] { "text-warning", "< 1 days" };
+        }
+
+        // 6. MORE THAN ONE DAY REMAINING (Code "a")
+        return new string[] { "text-default", $"{daysRemaining} days" };
+    }
+
+}
+<div class="card">
+    <div class="card-header border-transparent">
+        <h3 class="card-title">Project Summary</h3>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body p-0" style="display: block;">
+        <div class="table-responsive">
+            <table id="tblTaskSummary" class="table m-0">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Task ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Due Date</th>
+                        <th width="20%">Assigned To</th>
+                        <th>Status</th>
+                        <th>Time Remaining</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int no = 0;}
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(++no)</td>
+                                <td><b>#@item.mainTask.Id</b></td>
+                                <td>@item.mainTask.title</td>
+                                <td>@item.mainTask.description</td>
+                                <td>@(item.mainTask.dueDate?.ToString("dd MMM yyyy"))</td>
+                                @*<td>
+                                    @{
+                                        if (item.submainTask.Any())
+                                        {
+                                            foreach (var st in item.submainTask)
+                                            {
+                                                @Html.Raw(string.Concat(st.ownerBadgeId, " - ", st.ownerFullName, "&nbsp; <span class=\"badge badge-primary\">" + st.currentStatus + "</span></br>"));
+                                            }
+                                        }
+                                }
+                                </td>*@
+                                <td>@Html.Raw(item.mainTask.workersId.Replace(", ", ",</br>"))</td>
+                                <td>
+                                    @{
+                                        if (!string.IsNullOrWhiteSpace(item.mainTask.status))
+                                        {
+                                            if (item.mainTask.status == "ongoing" || item.mainTask.status == "on going")
+                                            {
+                                                <span class="badge badge-warning">@item.mainTask.status.ToUpper()</span>
+                                            }
+                                            else if (item.mainTask.status == "pending")
+                                            {
+                                                <span class="badge badge-danger">@item.mainTask.status.ToUpper()</span>
+                                            }
+                                            else if (item.mainTask.status == "finish")
+                                            {
+                                                <span class="badge badge-success">@item.mainTask.status.ToUpper()</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary">@item.mainTask.status.ToUpper()</span>
+                                            }
+                                        }
+
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        var remaining = timeRemain(item.mainTask.dueDate, item.mainTask.status);
+                                        <span class="@(remaining[0])">@(remaining[1])</span>
+                                    }
+                                </td>
+                                <td>
+
+                                    <button type="button" class="btn btn-default" onclick="actionTask(@item.mainTask.Id, 'edit')"><span class="fas fa-wrench"></span></button>
+                                    <button type="button" class="btn btn-danger" onclick="actionTask(@item.mainTask.Id, 'delete')"><span class="fas fa-trash"></span></button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- /.table-responsive -->
+    </div>
+    <!-- /.card-body -->
+    <div class="card-footer clearfix" style="display: block;">
+        <a onclick="createTask(0)" class="btn btn-sm btn-primary float-right"><span class="fas fa-plus"></span> &nbsp; Create New Project</a>
+    </div>
+    <!-- /.card-footer -->
+    <div id="divTaskMdl"></div>
+</div>
+<script>
+    $(document).ready(() => {
+
+    });
+
+
+    function createTask(id) {
+        $.get('@Url.Action("CreateEditMainTask")', { id: id }, (res) => {
+            if (!res.flag) {
+                $('#divTaskMdl').html(res);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function actionTask(id, command) {
+        if (command == 'edit') {
+            createTask(id);
+        } else if (command == 'delete') {
+            jConfirm('Are you sure want to delete task ID #' + id +'?\nDoing so will also delete all task that has been assigned to the workers.', 'Confirm', (e) => {
+                if (e) {
+                    $.post('@Url.Action("DeleteMainTask")', { id: id }, (res) => {
+                        debugger;
+                        notify(res.msg, res.flag);
+                        if (res.flag == "success") {
+                            $('#modalCreateTask').modal('hide');
+                            setTimeout(function () {
+                                getSummaryTask();
+                            }, 1500);
+                        } else {
+                            console.log(res.data);
+                        }
+                    }).fail(() => {
+                        notify("Failed when deleting task.", "error");
+                    });
+                }
+            });
+        }
+    }
+</script>

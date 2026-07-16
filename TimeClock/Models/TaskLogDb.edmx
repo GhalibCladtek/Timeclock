@@ -1,0 +1,306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="TaskLogModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="TblActivityLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ownerId" Type="int" Nullable="false" />
+          <Property Name="ownerFullName" Type="varchar(max)" />
+          <Property Name="activityDescription" Type="int" />
+          <Property Name="dateRecorded" Type="datetime" />
+          <Property Name="deleted" Type="bit" Nullable="false" />
+          <Property Name="deletedBy" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="TblRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="roleName" Type="varchar" MaxLength="50" />
+          <Property Name="roleLevel" Type="int" />
+        </EntityType>
+        <EntityType Name="TblTaskByIndividual">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTBS" Type="int" />
+          <Property Name="ownerId" Type="int" Nullable="false" />
+          <Property Name="ownerBadgeId" Type="varchar(max)" />
+          <Property Name="ownerFullName" Type="varchar(max)" />
+          <Property Name="startDate" Type="datetime" />
+          <Property Name="finishDate" Type="datetime" />
+          <Property Name="currentStatus" Type="varchar(max)" />
+          <Property Name="remarks" Type="varchar(max)" />
+          <Property Name="remarksWhenCanceled" Type="varchar(max)" />
+          <Property Name="remarksWhenPaused" Type="varchar(max)" />
+          <Property Name="attachment" Type="varchar(max)" />
+          <Property Name="canceled" Type="bit" Nullable="false" />
+          <Property Name="createdAt" Type="datetime" />
+          <Property Name="createdBy" Type="varchar(max)" />
+          <Property Name="updateAt" Type="datetime" />
+          <Property Name="updateBy" Type="varchar(max)" />
+          <Property Name="deleted" Type="bit" Nullable="false" />
+          <Property Name="deletedAt" Type="datetime" />
+          <Property Name="deletedBy" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="TblTaskBySuperior">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="parentId" Type="int" />
+          <Property Name="ownerId" Type="int" Nullable="false" />
+          <Property Name="ownerBadgeId" Type="varchar(max)" />
+          <Property Name="ownerFullName" Type="varchar(max)" />
+          <Property Name="title" Type="varchar(max)" Nullable="false" />
+          <Property Name="description" Type="varchar(max)" />
+          <Property Name="dueDate" Type="datetime" />
+          <Property Name="status" Type="varchar(max)" />
+          <Property Name="remarks" Type="varchar(max)" />
+          <Property Name="attachment" Type="varchar(max)" />
+          <Property Name="workersId" Type="varchar(max)" />
+          <Property Name="createdAt" Type="datetime" />
+          <Property Name="createdBy" Type="varchar(max)" />
+          <Property Name="updateAt" Type="datetime" />
+          <Property Name="updateBy" Type="varchar(max)" />
+          <Property Name="deleted" Type="bit" Nullable="false" />
+          <Property Name="deletedAt" Type="datetime" />
+          <Property Name="deletedBy" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="TblUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="password" Type="varchar(max)" />
+          <Property Name="badgeId" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="fullName" Type="varchar(max)" />
+          <Property Name="title" Type="varchar" MaxLength="50" />
+          <Property Name="levelPosition" Type="int" Nullable="false" />
+          <Property Name="superiorId" Type="int" />
+        </EntityType>
+        <EntityContainer Name="TaskLogModelStoreContainer">
+          <EntitySet Name="TblActivityLog" EntityType="Self.TblActivityLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblRoles" EntityType="Self.TblRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblTaskByIndividual" EntityType="Self.TblTaskByIndividual" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblTaskBySuperior" EntityType="Self.TblTaskBySuperior" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblUsers" EntityType="Self.TblUsers" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TaskLogModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TaskLogEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="TblActivityLog" EntityType="TaskLogModel.TblActivityLog" />
+          <EntitySet Name="TblRoles" EntityType="TaskLogModel.TblRoles" />
+          <EntitySet Name="TblTaskByIndividual" EntityType="TaskLogModel.TblTaskByIndividual" />
+          <EntitySet Name="TblTaskBySuperior" EntityType="TaskLogModel.TblTaskBySuperior" />
+          <EntitySet Name="TblUsers" EntityType="TaskLogModel.TblUsers" />
+        </EntityContainer>
+        <EntityType Name="TblActivityLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ownerId" Type="Int32" Nullable="false" />
+          <Property Name="ownerFullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="activityDescription" Type="Int32" />
+          <Property Name="dateRecorded" Type="DateTime" Precision="3" />
+          <Property Name="deleted" Type="Boolean" Nullable="false" />
+          <Property Name="deletedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TblRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="roleName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="roleLevel" Type="Int32" />
+        </EntityType>
+        <EntityType Name="TblTaskByIndividual">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdTBS" Type="Int32" />
+          <Property Name="ownerId" Type="Int32" Nullable="false" />
+          <Property Name="ownerBadgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ownerFullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="startDate" Type="DateTime" Precision="3" />
+          <Property Name="finishDate" Type="DateTime" Precision="3" />
+          <Property Name="currentStatus" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarksWhenCanceled" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarksWhenPaused" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="attachment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="canceled" Type="Boolean" Nullable="false" />
+          <Property Name="createdAt" Type="DateTime" Precision="3" />
+          <Property Name="createdBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="updateAt" Type="DateTime" Precision="3" />
+          <Property Name="updateBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="deleted" Type="Boolean" Nullable="false" />
+          <Property Name="deletedAt" Type="DateTime" Precision="3" />
+          <Property Name="deletedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TblTaskBySuperior">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="parentId" Type="Int32" />
+          <Property Name="ownerId" Type="Int32" Nullable="false" />
+          <Property Name="ownerBadgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ownerFullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="dueDate" Type="DateTime" Precision="3" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="attachment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="workersId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdAt" Type="DateTime" Precision="3" />
+          <Property Name="createdBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="updateAt" Type="DateTime" Precision="3" />
+          <Property Name="updateBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="deleted" Type="Boolean" Nullable="false" />
+          <Property Name="deletedAt" Type="DateTime" Precision="3" />
+          <Property Name="deletedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TblUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="badgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="fullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="levelPosition" Type="Int32" Nullable="false" />
+          <Property Name="superiorId" Type="Int32" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TaskLogModelStoreContainer" CdmEntityContainer="TaskLogEntities">
+          <EntitySetMapping Name="TblActivityLog">
+            <EntityTypeMapping TypeName="TaskLogModel.TblActivityLog">
+              <MappingFragment StoreEntitySet="TblActivityLog">
+                <ScalarProperty Name="deletedBy" ColumnName="deletedBy" />
+                <ScalarProperty Name="deleted" ColumnName="deleted" />
+                <ScalarProperty Name="dateRecorded" ColumnName="dateRecorded" />
+                <ScalarProperty Name="activityDescription" ColumnName="activityDescription" />
+                <ScalarProperty Name="ownerFullName" ColumnName="ownerFullName" />
+                <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblRoles">
+            <EntityTypeMapping TypeName="TaskLogModel.TblRoles">
+              <MappingFragment StoreEntitySet="TblRoles">
+                <ScalarProperty Name="roleLevel" ColumnName="roleLevel" />
+                <ScalarProperty Name="roleName" ColumnName="roleName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblTaskByIndividual">
+            <EntityTypeMapping TypeName="TaskLogModel.TblTaskByIndividual">
+              <MappingFragment StoreEntitySet="TblTaskByIndividual">
+                <ScalarProperty Name="deletedBy" ColumnName="deletedBy" />
+                <ScalarProperty Name="deletedAt" ColumnName="deletedAt" />
+                <ScalarProperty Name="deleted" ColumnName="deleted" />
+                <ScalarProperty Name="updateBy" ColumnName="updateBy" />
+                <ScalarProperty Name="updateAt" ColumnName="updateAt" />
+                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+                <ScalarProperty Name="canceled" ColumnName="canceled" />
+                <ScalarProperty Name="attachment" ColumnName="attachment" />
+                <ScalarProperty Name="remarksWhenPaused" ColumnName="remarksWhenPaused" />
+                <ScalarProperty Name="remarksWhenCanceled" ColumnName="remarksWhenCanceled" />
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="currentStatus" ColumnName="currentStatus" />
+                <ScalarProperty Name="finishDate" ColumnName="finishDate" />
+                <ScalarProperty Name="startDate" ColumnName="startDate" />
+                <ScalarProperty Name="ownerFullName" ColumnName="ownerFullName" />
+                <ScalarProperty Name="ownerBadgeId" ColumnName="ownerBadgeId" />
+                <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+                <ScalarProperty Name="IdTBS" ColumnName="IdTBS" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblTaskBySuperior">
+            <EntityTypeMapping TypeName="TaskLogModel.TblTaskBySuperior">
+              <MappingFragment StoreEntitySet="TblTaskBySuperior">
+                <ScalarProperty Name="deletedBy" ColumnName="deletedBy" />
+                <ScalarProperty Name="deletedAt" ColumnName="deletedAt" />
+                <ScalarProperty Name="deleted" ColumnName="deleted" />
+                <ScalarProperty Name="updateBy" ColumnName="updateBy" />
+                <ScalarProperty Name="updateAt" ColumnName="updateAt" />
+                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
+                <ScalarProperty Name="createdAt" ColumnName="createdAt" />
+                <ScalarProperty Name="workersId" ColumnName="workersId" />
+                <ScalarProperty Name="attachment" ColumnName="attachment" />
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="dueDate" ColumnName="dueDate" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="ownerFullName" ColumnName="ownerFullName" />
+                <ScalarProperty Name="ownerBadgeId" ColumnName="ownerBadgeId" />
+                <ScalarProperty Name="ownerId" ColumnName="ownerId" />
+                <ScalarProperty Name="parentId" ColumnName="parentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblUsers">
+            <EntityTypeMapping TypeName="TaskLogModel.TblUsers">
+              <MappingFragment StoreEntitySet="TblUsers">
+                <ScalarProperty Name="superiorId" ColumnName="superiorId" />
+                <ScalarProperty Name="levelPosition" ColumnName="levelPosition" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="fullName" ColumnName="fullName" />
+                <ScalarProperty Name="badgeId" ColumnName="badgeId" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
