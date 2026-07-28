@@ -12,14 +12,15 @@ namespace TimeClock.Controllers
         // GET: Login
         [AllowAnonymous]
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Index(string ReturnUrl)
         {
+            ViewBag.ReturnUrl = ReturnUrl;
             return View();
         }
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult Login(string user, string pass, bool rememberMe = false)
+        public ActionResult Login(string user, string pass, bool rememberMe = false, string rUrl = "")
         {
             try
             {
@@ -54,7 +55,7 @@ namespace TimeClock.Controllers
 
                             TempData["message"] = "Login success!";
                             TempData["code"] = "success";
-                            return Json(new { flag = JsonResponseStandart.success, msg = "Login success!", url = Url.Action("Index", "Home") });
+                            return Json(new { flag = JsonResponseStandart.success, msg = "Login success!", url = !string.IsNullOrEmpty(rUrl) && Url.IsLocalUrl(rUrl) ? rUrl : Url.Action("Index", "Tracker") });
                         }
                         else
                         {

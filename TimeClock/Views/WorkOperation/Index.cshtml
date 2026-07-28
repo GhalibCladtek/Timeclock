@@ -1,0 +1,214 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="content-wrapper">
+    <div class="container">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Dashboard</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="float-sm-right btn btn-primary"><i class="fas fa-plus"></i> Create New Issue</button>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <section class="content">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-primary"><i class="fas fa-clipboard-list"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Open Issues</span>
+                            <span class="info-box-number">@ViewBag.OpenCount</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-danger"><i class="far fa-clock"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Overdue</span>
+                            <span class="info-box-number">@ViewBag.Overdue</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-primary"><i class="fas fa-user-clock"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Avg. Resolve Time</span>
+                            <span class="info-box-number">@ViewBag.AvgResolve</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-success"><b>%</b></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Solved In Time</span>
+                            <span class="info-box-number">@ViewBag.SolvedInTime</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Issue By Status</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            Open
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 40%"></div>
+                            </div>
+                            In Progress
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-warning" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+                            </div>
+                            Closed
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Issue By Section (Open and In Progress)</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="row">
+                                <span class="col-lg-6">Automation</span>
+                                <span class="col-lg-6 text-right">67</span>
+                            </div>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 67%"></div>
+                            </div>
+                            <div class="row">
+                                <span class="col-lg-6">SCADA</span>
+                                <span class="col-lg-6 text-right">75</span>
+                            </div>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+                            </div>
+                            <div class="row">
+                                <span class="col-lg-6">Design</span>
+                                <span class="col-lg-6 text-right">60</span>
+                            </div>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 60%"></div>
+                            </div>
+                            <div class="row">
+                                <span class="col-lg-6">Others</span>
+                                <span class="col-lg-6 text-right">20</span>
+                            </div>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-danger" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 20%"></div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Summary Issue</h3>
+
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="row">
+                                <!--<div class="col-sm-6">-->
+                                    <!-- text input -->
+                                    <!--<div class="form-group">
+                                        <label>Search</label>
+                                        <input type="text" class="form-control" placeholder="Enter ...">
+                                    </div>
+                                </div>-->
+                                <div class="offset-sm-6 col-sm-3">
+                                    <!-- text input -->
+                                    <div class="form-group">
+                                        <label>Section</label>
+                                        <select class="form-control">
+                                            <option>Automation</option>
+                                            <option>SCADA</option>
+                                            <option>Design</option>
+                                            <option>Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <!-- text input -->
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="form-control">
+                                            <option>Open</option>
+                                            <option>In Progress</option>
+                                            <option>Closed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tblSummary">
+                                <table id="TblSummary" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Issue</th>
+                                            <th>Section</th>
+                                            <th>Unit / Area</th>
+                                            <th>PIC</th>
+                                            <th>Planned<br />(Duration)</th>
+                                            <th>Actual<br />(Duration)</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    var tblSummary = null;
+    $(document).ready(function () {
+        tblSummary = new DataTable($('#TblSummary'), {
+
+        });
+    });
+</script>

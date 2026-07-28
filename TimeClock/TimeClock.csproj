@@ -145,12 +145,20 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\APIController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\Helpers\DataToString.cs" />
+    <Compile Include="Controllers\Helpers\WorkingHours.cs" />
     <Compile Include="Controllers\Helpers\JsonResponseStandard.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Controllers\TrackerController.cs" />
+    <Compile Include="Controllers\WorkOperationController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ApiResponse.cs" />
     <Compile Include="Models\TaskLogDb.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -170,6 +178,9 @@
     <Compile Include="Models\TblActivityLog.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TblProjectSubmission.cs">
+      <DependentUpon>TaskLogDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\TblRoles.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
@@ -179,9 +190,19 @@
     <Compile Include="Models\TblTaskBySuperior.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TblTasks.cs">
+      <DependentUpon>TaskLogDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TblUserActivity.cs">
+      <DependentUpon>TaskLogDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\TblUsers.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TblWorkOperational.cs">
+      <DependentUpon>TaskLogDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Modul\API.cs" />
     <Compile Include="Modul\AuthCustom.cs" />
     <Compile Include="Controllers\Helpers\CookieSecurity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -626,6 +647,10 @@
     <Content Include="adminlte\plugins\datatables-select\js\dataTables.select.min.js" />
     <Content Include="adminlte\plugins\datatables-select\js\select.bootstrap4.js" />
     <Content Include="adminlte\plugins\datatables-select\js\select.bootstrap4.min.js" />
+    <Content Include="adminlte\plugins\datatables\datatables.css" />
+    <Content Include="adminlte\plugins\datatables\datatables.js" />
+    <Content Include="adminlte\plugins\datatables\datatables.min.css" />
+    <Content Include="adminlte\plugins\datatables\datatables.min.js" />
     <Content Include="adminlte\plugins\datatables\jquery.dataTables.js" />
     <Content Include="adminlte\plugins\datatables\jquery.dataTables.min.js" />
     <Content Include="adminlte\plugins\daterangepicker\daterangepicker.css" />
@@ -2293,18 +2318,21 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Shared\_TopNavBar.cshtml" />
     <Content Include="Views\Account\_EditAccount.cshtml" />
     <Content Include="Views\Home\_TaskSummary.cshtml" />
     <Content Include="Views\Home\_AddEditTask.cshtml" />
-    <Content Include="Views\Home\_TaskSummaryWorkers.cshtml" />
+    <Content Include="Views\Home\_ProjectTaskSummary.cshtml" />
+    <Content Include="Views\Task\_EditTask.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\WorkOperation\Index.cshtml" />
+    <Content Include="Views\Tracker\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\API\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

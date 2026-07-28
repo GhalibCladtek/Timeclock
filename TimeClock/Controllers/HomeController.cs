@@ -24,29 +24,48 @@ namespace TimeClock.Controllers
                     return Json(new { flag = JsonResponseStandart.error, msg = "Session expired. Please log in again." }, JsonRequestBehavior.AllowGet);
                 }
                 int currentUserId = (int)Session["Id"];
+                int currentUserLevel = (int)Session["LevelPos"];
 
                 using (var db = new TaskLogEntities())
                 {
-                    var taskViews = new List<TaskView>();
-                    var task = db.TblTaskBySuperior.Where(x => x.ownerId == currentUserId && x.deleted == false).ToList();
-                    if (task.Count > 0) 
+                    if(currentUserLevel == 0)
                     {
-                        foreach(var i in task)
+                        var taskDetail = new List<ProjectTaskDetail>();
+                        string qry = $@"
+                        select 
+                        a.title, a.description, a.ownerFullName as assignBy, a.dueDate 
+                        , b.Id, b.IdTBS, b.ownerId, b.ownerBadgeId, b.ownerFullName
+                        , b.startDate, b.finishDate, b.currentStatus
+                        , b.remarks, b.remarksWhenCanceled, b.remarksWhenPaused
+                        , b.attachment, b.canceled
+                        from TblTaskBySuperior  a 
+                        left join TblTaskByIndividual b on a.Id=b.IdTBS
+                        where a.deleted=0 and b.deleted=0 and b.ownerId={currentUserId}";
+                        var task = db.Database.SqlQuery<ProjectTaskDetail>(qry).ToList();
+                        return PartialView("_ProjectTaskSummary", task);
+                    } else
+                    {
+                        var taskViews = new List<TaskView>();
+                        var task = db.TblTaskBySuperior.Where(x => x.ownerId == currentUserId && x.deleted == false).ToList();
+                        if (task.Count > 0) 
                         {
-                            var mainTask = new TaskView
+                            foreach(var i in task)
                             {
-                                mainTask = i,
-                                submainTask = db.TblTaskByIndividual.Where(x=> x.deleted == false && x.IdTBS == i.Id && x.canceled == false).ToList()
-                            };
-                            taskViews.Add(mainTask);
+                                var mainTask = new TaskView
+                                {
+                                    mainTask = i,
+                                    submainTask = db.TblTaskByIndividual.Where(x=> x.deleted == false && x.IdTBS == i.Id && x.canceled == false).ToList()
+                                };
+                                taskViews.Add(mainTask);
+                            }
                         }
+                        return PartialView("_TaskSummary", taskViews);
                     }
-                    return PartialView("_TaskSummary", taskViews);
                 }
 
             } catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = ex.Message, data = "" });
+                return Json(new { flag = JsonResponseStandart.error, msg = ex.Message, data = "" }, JsonRequestBehavior.AllowGet);
             }
         }
         [HttpGet]
@@ -107,7 +126,7 @@ namespace TimeClock.Controllers
                                     task.createdAt = DateTime.Now;
                                     task.createdBy = (string)Session["BadgeId"];
                                     task.workersId = string.Join(", ", workers);
-                                    task.status = "open";
+                                    task.status = StatusTask.Open;
                                     db.TblTaskBySuperior.Add(task);
                                     db.SaveChanges();
 
@@ -124,7 +143,7 @@ namespace TimeClock.Controllers
                                             subTask.ownerFullName = user.fullName;
                                             subTask.createdAt = DateTime.Now;
                                             subTask.createdBy = (string)Session["BadgeId"];
-                                            subTask.currentStatus = "open";
+                                            subTask.currentStatus = StatusTask.Open;
                                             db.TblTaskByIndividual.Add(subTask);
                                         }
                                     }
@@ -173,7 +192,7 @@ namespace TimeClock.Controllers
                                                 subTask.ownerFullName = user.fullName;
                                                 subTask.createdAt = DateTime.Now;
                                                 subTask.createdBy = (string)Session["BadgeId"];
-                                                subTask.currentStatus = "open";
+                                                subTask.currentStatus = StatusTask.Open;
                                                 db.TblTaskByIndividual.Add(subTask);
                                             } else
                                             {

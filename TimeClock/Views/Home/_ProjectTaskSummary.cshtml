@@ -1,0 +1,209 @@
+﻿@model IEnumerable<TimeClock.Models.ProjectTaskDetail>
+@{
+    string[] timeRemain(DateTime? dt, string status, bool cancel = false)
+    {
+        if (cancel)
+        {
+            return new string[] { "text-danger", "Canceled" };
+        }
+
+        // 1. Handle null dates safely
+        if (!dt.HasValue)
+        {
+            return new string[] { "", "-" };
+        }
+
+        // 2. Check if the task is already finished (Code "b")
+        // This catches finished tasks before we even worry about the deadline
+        if (string.Equals(status, TimeClock.Models.StatusTask.Finish, StringComparison.OrdinalIgnoreCase))
+        {
+            return new string[] { "text-success", "Done" };
+        }
+
+        // 3. Calculate remaining days for unfinished tasks
+        int daysRemaining = (dt.Value.Date - DateTime.Today).Days;
+
+        // 4. DUE DATE HAS PASSED and NOT finished (Code "c")
+        if (daysRemaining < 0)
+        {
+            return new string[] { "text-danger", $"Delayed {Math.Abs(daysRemaining)} days" };
+        }
+
+        // 5. DUE DATE IS TODAY / NEAR DEADLINE (Code "d")
+        if (daysRemaining == 0)
+        {
+            return new string[] { "text-warning", "< 1 days" };
+        }
+
+        // 6. MORE THAN ONE DAY REMAINING (Code "a")
+        return new string[] { "text-default", $"{daysRemaining} days" };
+    }
+
+    string[] statusAndRemarks(TimeClock.Models.ProjectTaskDetail td)
+    {
+        if (td.canceled)
+        {
+            return new string[] { "<span class=\"badge badge-danger\">Canceled</span>", td.remarksWhenCanceled };
+        }
+
+        if (!string.IsNullOrWhiteSpace(td.currentStatus))
+        {
+            if (td.currentStatus == TimeClock.Models.StatusTask.OnGoing)
+            {
+                return new string[] { "<span class=\"badge badge-primary\">" + td.currentStatus.ToUpper() + "</span>", td.remarks };
+            }
+            else if (td.currentStatus == TimeClock.Models.StatusTask.Paused)
+            {
+                return new string[] { "<span class=\"badge badge-warning\">" + td.currentStatus.ToUpper() + "</span>", td.remarksWhenPaused };
+            }
+            else if (td.currentStatus == TimeClock.Models.StatusTask.Finish)
+            {
+                return new string[] { "<span class=\"badge badge-success\">" + td.currentStatus.ToUpper() + "</span>", td.remarks };
+            }
+            else
+            {
+                return new string[] { "<span class=\"badge badge-secondary\">" + td.currentStatus.ToUpper() + "</span>", td.remarks };
+            }
+        }
+        else
+        {
+            return new string[] { "", td.remarks };
+        }
+    }
+
+    string btnAction(TimeClock.Models.ProjectTaskDetail td)
+    {
+        if (td.canceled)
+        {
+            return "<span class=\"badge badge-danger\">Canceled</span>";
+        }
+        int id = td.Id;
+        DateTime? start = td.startDate;
+        DateTime? stop = td.finishDate;
+        if (td.currentStatus == TimeClock.Models.StatusTask.Open)
+        {
+            return "<button type=\"button\" class=\"btn btn-success\" onclick=\"actionTask(" + id + ", 'start')\">Start Task</button>";
+        }
+        else if (td.currentStatus == TimeClock.Models.StatusTask.Paused)
+        {
+            return "<button type=\"button\" class=\"btn btn-block btn-outline-warning\" onclick=\"actionTask(" + id + ", 'continue')\">Continue Task</button>";
+        }
+        else if (td.currentStatus == TimeClock.Models.StatusTask.OnGoing)
+        {
+            return "<button type=\"button\" class=\"btn btn-warning\" onclick=\"actionTask(" + id + ", 'pause')\">Pause Task</button>"
+            + "<button type=\"button\" class=\"btn btn-primary\" onclick=\"actionTask(" + id + ", 'finish')\">Finish Task</button>";
+        }
+        else
+        {
+            return "";
+            //return "<button type=\"button\" class=\"btn btn-block btn-outline-secondary\" onclick=\"actionTask(" + id + ", 'see')\">See Task</button>";
+        }
+    }
+
+}
+<div class="card">
+    <div class="card-header border-transparent">
+        <h2 class="card-title">My Tasks from Project</h2>
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="tblTaskSummary" class="table" width="130%">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Action</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                    <th>Assigned By</th>
+                    <th>Status</th>
+                    <th>Time Remaining</th>
+                    <th>Start At</th>
+                    <th>Finish At</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int no = 0;}
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        var remaining = timeRemain(item.dueDate, item.currentStatus, item.canceled);
+                        var remarks = statusAndRemarks(item);
+                        var btnAct = btnAction(item);
+                        <tr>
+                            <td>@(++no)</td>
+                            <td>
+                                <div class="btn-group">
+                                    @Html.Raw(btnAct)
+                                </div>
+                            </td>
+                            <td>@item.title</td>
+                            <td>@item.description</td>
+                            <td>@(item.dueDate?.ToString("dd MMM yyyy"))</td>
+                            <td>@item.assignBy</td>
+                            <td>@Html.Raw(remarks[0])</td>
+                            <td><span class="@(remaining[0])">@(remaining[1])</span></td>
+                            <td>@(item.startDate?.ToString("dd MMM yyyy HH:mm:ss"))</td>
+                            <td>@(item.finishDate?.ToString("dd MMM yyyy HH:mm:ss"))</td>
+                            <td>@remarks[1]</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- /.card-body -->
+    <div id="divTaskMdl"></div>
+</div>
+<div id="divOwnerTask">
+
+</div>
+
+<script>
+    var tblTask = null;
+    $(document).ready(() => {
+        tblTask = new DataTable('#tblTaskSummary', {
+            scrollX: true,
+            responsive: true
+        });
+    });
+
+    function actionTask(id, command) {
+        /*
+         * command:
+         * start
+         * pause
+         * finish
+         * continue
+         * see (just like edit)
+        */
+        $.post('@Url.Action("ActionSubTask", "Task")', { id: id, command: command }, (res) => {
+            if (command == 'see') {
+                if (!res.flag) {
+                    $('#divTaskMdl').html(res);
+                } else {
+                    notify(res.msg, res.flag);
+                    console.log(res.data);
+                }
+            } else {
+                notify(res.msg, res.flag);
+                if (res.flag == "success") {
+                    setTimeout(function () {
+                        getSummaryTask();
+                    }, 200);
+                } else {
+                    console.log(res.data);
+                }
+            }
+        }).fail(() => {
+            notify("Unable to take action to the task.", "error");
+        });
+    }
+</script>

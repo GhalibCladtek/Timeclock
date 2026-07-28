@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Task Log | Log in</title>
+    <title>CladTask | Log in</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -23,7 +23,7 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="#"><b>Task</b>Log</a>
+            <a href="#"><b>Clad</b>Task</a>
         </div>
         <!-- /.login-logo -->
         <div class="card">
@@ -31,6 +31,7 @@
                 <p class="login-box-msg">Sign in to start your session</p>
 
                 <form id="formLogin">
+                    <input type="hidden" id="ReturnUrl" name="ReturnUrl" value="@ViewBag.ReturnUrl" />
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" placeholder="Username" id="user">
                         <div class="input-group-append">
@@ -65,13 +66,16 @@
                 </form>
 
                 <p class="mb-1 text-center">
-                    Doesn't have an account? <a href="#" class="text-center">Register here</a>
+                    Doesn't have an account? <a href="#" id="btnRegister" class="text-center">Register here</a>
                 </p>
             </div>
             <!-- /.login-card-body -->
         </div>
     </div>
     <!-- /.login-box -->
+
+    <div id="divMdl"></div>
+
     <!-- jQuery -->
     <script src="~/adminlte/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
@@ -119,7 +123,7 @@
             let originalText = $btn.text();
             $btn.prop("disabled", true).text("Logging in...");
 
-            $.post('@Url.Action("Login")', { user: $("#user").val(), pass: $("#pass").val(), rememberMe: $("#rememberMe").prop('checked') }, (res) => {
+            $.post('@Url.Action("Login")', { user: $("#user").val(), pass: $("#pass").val(), rememberMe: $("#rememberMe").prop('checked'), rUrl: $('#ReturnUrl').val() }, (res) => {
                 if (res.flag == 'success') {
                     notify(res.msg + '\n' + 'Please wait you will be redirected.', res.flag);
                     setTimeout(function () {
@@ -168,6 +172,20 @@
                 toastr["info"](msg);
             }
         }
+
+        $('#btnRegister').on('click', (e) => {
+            e.preventDefault();
+            notify('Register account still under construction', 'Info');
+            return;
+            $.get('@Url.Action("Register", "Account")', {}, (res) => {
+                if (!res.flag) {
+                    $('#divMdl').html(res);
+                } else {
+                    notify(res.msg, res.flag);
+                    console.log(res.data);
+                }
+            });
+        })
     </script>
 </body>
 </html>

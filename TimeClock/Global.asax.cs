@@ -17,5 +17,18 @@ namespace TimeClock
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        protected void Application_EndRequest()
+        {
+            var context = new HttpContextWrapper(Context);
+
+            // If the system is trying to redirect to login (302), BUT it's an AJAX request...
+            if (context.Response.StatusCode == 302 && context.Request.IsAjaxRequest())
+            {
+                // Cancel the redirect and force a 401 Unauthorized status
+                context.Response.Clear();
+                context.Response.StatusCode = 401;
+            }
+        }
     }
 }

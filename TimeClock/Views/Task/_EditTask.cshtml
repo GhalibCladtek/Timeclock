@@ -1,0 +1,137 @@
+﻿
+@model TimeClock.Models.ProjectTaskDetail
+<!-- modal -->
+<div class="modal fade" id="modalCreateTask" style="display: none;" aria-hidden="true">
+    <form id="formCreateTask">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">See Task Detail</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @Html.HiddenFor(x => x.Id, new { @class = "taskinput" })
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="title" class="col-4 col-form-label">Title</label>
+                            <div class="col-8">
+                                <input type="text" class="form-control taskinput" id="title" name="title" placeholder="Title" required value="@Model.title" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="description" class="col-4 col-form-label">Description</label>
+                            <div class="col-8">
+                                @Html.TextAreaFor(x => x.description, new { @type = "text", @class = "form-control taskinput", @id = "description", @name = "description", @placeholder = "Description", @required = "required", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="startDate" class="col-4 col-form-label">Start Date</label>
+                            <div class="col-4">
+                                <input type="text" class="form-control" id="startDate" value="@(Model.startDate?.ToString("dd MMM yyyy"))" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="finishDate" class="col-4 col-form-label">Finish Date</label>
+                            <div class="col-4">
+                                <input type="text" class="form-control taskinput datepick" id="finishDate" name="finishDate" placeholder="dd/MM/yyyy" required value="@(Model.startDate?.ToString("yyyy-MM-dd"))">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="remarks" class="col-4 col-form-label">Remarks</label>
+                            <div class="col-8">
+                                @Html.TextAreaFor(x => x.remarks, new { @type = "text", @class = "form-control taskinput", @id = "remarks", @name = "remarks", @placeholder = "Remarks your work here" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="attachment">Upload Attachment (Optional)</label>
+                            <input type="file" name="attachment" id="attachment" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </form>
+    <!-- /.modal-dialog -->
+</div>
+<script>
+
+    $(document).ready(() => {
+        $('.datepick').flatpickr({
+            altInput: true,
+            altFormat: "j M Y",
+            dateFormat: "Y-m-d"
+        });
+
+        $("#formCreateTask").validate({
+            errorClass: "text-danger", // Makes the text red
+            errorElement: "small",     // Uses a small tag for the error message
+            highlight: function (element) {
+                $(element).addClass("is-invalid"); // Adds red border to input
+            },
+            unhighlight: function (element) {
+                $(element).removeClass("is-invalid"); // Removes red border
+            }
+        });
+
+        $('#workersId').select2({
+            closeOnSelect: false,       // Keeps dropdown open for quick multiple choices
+            placeholder: "Assign people...",
+            allowClear: true            // Shows an "x" icon to clear all choices
+        });
+
+        $('#modalCreateTask').modal('show');
+
+    });
+
+    $("#formCreateTask").on("submit", function (e) {
+        e.preventDefault(); // Stop standard page reload
+
+        // 3. Trigger the actual validation check!
+        if ($(this).valid()) {
+
+            // If it passes, disable the button to prevent double-clicks
+            let $btn = $("#formCreateTask #btnSubmit");
+            let originalText = $btn.text();
+            $btn.prop("disabled", true).text("Saving...");
+
+            let taskForm = {};
+            $("#formCreateTask .taskinput").each((a, b) => {
+                taskForm[b.id] = b.value;
+            });
+
+            taskForm["workers"] = $("#formCreateTask #workersId").val();
+
+            $.post('@Url.Action("CreateEditMainTask")', taskForm, (res) => {
+                notify(res.msg, res.flag);
+                if (res.flag == "success") {
+                    $('#modalCreateTask').modal('hide');
+                    setTimeout(function () {
+                        getSummaryTask();
+                    }, 1500);
+                } else {
+                    $btn.prop("disabled", false).text(originalText);
+                    console.log(res.data);
+                }
+            }).fail(() => {
+                notify("Failed when creating task.", "error");
+                $btn.prop("disabled", false).text(originalText);
+            });
+        } else {
+            // The form is invalid. The plugin will automatically show the red labels!
+            notify("Please fill out all required fields.", "warning");
+        }
+    });
+
+    $('#modalCreateTask').on('shown.bs.modal', function (e) {
+    });
+
+
+
+</script>

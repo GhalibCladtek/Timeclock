@@ -12,15 +12,15 @@ namespace TimeClock.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class TblActivityLog
+    public partial class TblTasks
     {
         public int Id { get; set; }
-        public int ownerId { get; set; }
-        public string ownerBadgeId { get; set; }
-        public string ownerFullName { get; set; }
-        public string title { get; set; }
-        public string description { get; set; }
-        public Nullable<System.DateTime> dateStart { get; set; }
-        public Nullable<System.DateTime> dateStop { get; set; }
+        public string taskTitle { get; set; }
+        public string taskDescription { get; set; }
+        public bool isActive { get; set; }
+        public string remarks { get; set; }
+        public Nullable<System.DateTime> createdOn { get; set; }
+        public string createdBy { get; set; }
+        public string status { get; set; }
     }
 }

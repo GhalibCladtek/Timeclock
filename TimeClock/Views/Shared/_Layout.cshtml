@@ -7,7 +7,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewBag.Title | Task Log</title>
+    <title>@ViewBag.Title | CladTask</title>
     <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
 
     <!-- Google Font: Source Sans Pro -->
@@ -28,7 +28,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="~/adminlte/plugins/select2/css/select2.min.css">
     <!-- Flatpickr - Lightweight Date or Time Picker -->
     <link rel="stylesheet" href="~/adminlte/plugins/flatpickr/flatpickr.min.css">
-
+    <!-- Datatable -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables/datatables.css">
 
     <!-- REQUIRED SCRIPTS -->
     <!-- jQuery -->
@@ -53,6 +54,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="~/Scripts/CookieMaster.js"></script>
     <!-- jQuery Validator -->
     <script src="~/adminlte/plugins/jquery-validation/jquery.validate.js"></script>
+    <!-- Datatable -->
+    <script src="~/adminlte/plugins/datatables/datatables.js"></script>
 
     <!-- Loading css -->
     <style>
@@ -114,7 +117,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             border-color: #006fe6;
         }
     </style>
-    
+
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
     <div class="loading" style="display:none;">
@@ -127,23 +130,24 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <footer class="main-footer">
             <div class="float-right d-none d-sm-inline">
-                Task Log - Automation and Design Department
+                CladTask - Automation and Design Department
             </div>
             <strong>Copyright &copy; @DateTime.Now.Year PEPP Department.</strong> All rights reserved.
         </footer>
     </div>
 
     <script>
+        $(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
+            if (jqXHR.status === 401) {
+                // Session expired! Redirect them to your login page.
+                // Adjust the URL to match your actual login route
+                window.location.href = '/Login/Index?ReturnUrl=' + encodeURIComponent(window.location.pathname);
+            }
+        });
         $(document).ready(function () {
             $("input[type=text]").keyup(function () {
                 $(this).val($(this).val().toUpperCase());
             });
-
-            //var $message = $('#notify').text();
-            //var $type = $('#notify').data('type');
-            //if ($message.length > 0) {
-            //    notify($message, $type);
-            //}
 
             if ('@TempData["message"]'.trim()) {
                 let type = '@TempData["code"]'.trim() ?? 'info';

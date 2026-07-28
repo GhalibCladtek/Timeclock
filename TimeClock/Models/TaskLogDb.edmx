@@ -11,11 +11,37 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ownerId" Type="int" Nullable="false" />
+          <Property Name="ownerBadgeId" Type="varchar(max)" />
           <Property Name="ownerFullName" Type="varchar(max)" />
-          <Property Name="activityDescription" Type="int" />
-          <Property Name="dateRecorded" Type="datetime" />
-          <Property Name="deleted" Type="bit" Nullable="false" />
-          <Property Name="deletedBy" Type="varchar(max)" />
+          <Property Name="title" Type="varchar(max)" />
+          <Property Name="description" Type="varchar(max)" />
+          <Property Name="dateStart" Type="datetime" />
+          <Property Name="dateStop" Type="datetime" />
+        </EntityType>
+        <EntityType Name="TblProjectSubmission">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="project_title" Type="nvarchar(max)" />
+          <Property Name="requesting_department" Type="nvarchar(max)" />
+          <Property Name="project_initiator" Type="nvarchar(max)" />
+          <Property Name="strategy_objective" Type="nvarchar(max)" />
+          <Property Name="site_location" Type="nvarchar(max)" />
+          <Property Name="problem_statement" Type="nvarchar(max)" />
+          <Property Name="status" Type="nvarchar(max)" />
+          <Property Name="status_summary" Type="nvarchar(max)" />
+          <Property Name="priority" Type="nvarchar(max)" />
+          <Property Name="cumulative_percentage" Type="nvarchar(max)" />
+          <Property Name="budget_planned" Type="nvarchar(max)" />
+          <Property Name="budget_actual" Type="nvarchar(max)" />
+          <Property Name="budget_remaining" Type="nvarchar(max)" />
+          <Property Name="budget_status" Type="nvarchar(max)" />
+          <Property Name="otd" Type="nvarchar(max)" />
+          <Property Name="planned_start_date" Type="datetime" />
+          <Property Name="planned_completion_date" Type="datetime" />
+          <Property Name="actual_start_date" Type="datetime" />
+          <Property Name="actual_completion_date" Type="datetime" />
         </EntityType>
         <EntityType Name="TblRoles">
           <Key>
@@ -74,6 +100,35 @@
           <Property Name="deletedAt" Type="datetime" />
           <Property Name="deletedBy" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="TblTasks">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="taskTitle" Type="varchar(max)" />
+          <Property Name="taskDescription" Type="varchar(max)" />
+          <Property Name="isActive" Type="bit" Nullable="false" />
+          <Property Name="remarks" Type="varchar(max)" />
+          <Property Name="createdOn" Type="datetime" />
+          <Property Name="createdBy" Type="varchar(max)" />
+          <Property Name="status" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="TblUserActivity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="jobType" Type="varchar(max)" />
+          <Property Name="badgeId" Type="varchar(max)" />
+          <Property Name="fullName" Type="varchar(max)" />
+          <Property Name="section" Type="varchar(max)" />
+          <Property Name="startDatetime" Type="datetime" />
+          <Property Name="stopDatetime" Type="datetime" />
+          <Property Name="duration" Type="int" />
+          <Property Name="taskId" Type="int" />
+          <Property Name="taskTitle" Type="varchar(max)" />
+          <Property Name="remarks" Type="varchar(max)" />
+        </EntityType>
         <EntityType Name="TblUsers">
           <Key>
             <PropertyRef Name="Id" />
@@ -87,12 +142,45 @@
           <Property Name="levelPosition" Type="int" Nullable="false" />
           <Property Name="superiorId" Type="int" />
         </EntityType>
+        <EntityType Name="TblWorkOperational">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="planSites" Type="varchar(max)" />
+          <Property Name="taskType" Type="varchar(max)" />
+          <Property Name="issueDescription" Type="varchar(max)" />
+          <Property Name="unitOrArea" Type="varchar(max)" />
+          <Property Name="reportedOn" Type="datetime" />
+          <Property Name="requestedOn" Type="datetime" />
+          <Property Name="reportedBy" Type="varchar(max)" />
+          <Property Name="reportedByDepartment" Type="varchar(max)" />
+          <Property Name="actionStart" Type="datetime" />
+          <Property Name="actionFinish" Type="datetime" />
+          <Property Name="actionFinishActual" Type="datetime" />
+          <Property Name="durationPlanned" Type="int" />
+          <Property Name="durationActual" Type="int" />
+          <Property Name="PIC" Type="varchar(max)" />
+          <Property Name="PICworkers" Type="varchar(max)" />
+          <Property Name="troubleshootResult" Type="varchar(max)" />
+          <Property Name="rootCause" Type="varchar(max)" />
+          <Property Name="correctiveAction" Type="varchar(max)" />
+          <Property Name="status" Type="varchar(max)" />
+          <Property Name="remarks" Type="varchar(max)" />
+          <Property Name="createdBy" Type="varchar(max)" />
+          <Property Name="createdOn" Type="datetime" />
+          <Property Name="dlt" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityContainer Name="TaskLogModelStoreContainer">
           <EntitySet Name="TblActivityLog" EntityType="Self.TblActivityLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblProjectSubmission" EntityType="Self.TblProjectSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblRoles" EntityType="Self.TblRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblTaskByIndividual" EntityType="Self.TblTaskByIndividual" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblTaskBySuperior" EntityType="Self.TblTaskBySuperior" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblTasks" EntityType="Self.TblTasks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblUserActivity" EntityType="Self.TblUserActivity" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblUsers" EntityType="Self.TblUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblWorkOperational" EntityType="Self.TblWorkOperational" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -104,6 +192,10 @@
           <EntitySet Name="TblTaskByIndividual" EntityType="TaskLogModel.TblTaskByIndividual" />
           <EntitySet Name="TblTaskBySuperior" EntityType="TaskLogModel.TblTaskBySuperior" />
           <EntitySet Name="TblUsers" EntityType="TaskLogModel.TblUsers" />
+          <EntitySet Name="TblWorkOperational" EntityType="TaskLogModel.TblWorkOperational" />
+          <EntitySet Name="TblUserActivity" EntityType="TaskLogModel.TblUserActivity" />
+          <EntitySet Name="TblTasks" EntityType="TaskLogModel.TblTasks" />
+          <EntitySet Name="TblProjectSubmission" EntityType="TaskLogModel.TblProjectSubmission" />
         </EntityContainer>
         <EntityType Name="TblActivityLog">
           <Key>
@@ -111,11 +203,12 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ownerId" Type="Int32" Nullable="false" />
+          <Property Name="ownerBadgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="ownerFullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="activityDescription" Type="Int32" />
-          <Property Name="dateRecorded" Type="DateTime" Precision="3" />
-          <Property Name="deleted" Type="Boolean" Nullable="false" />
-          <Property Name="deletedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="dateStart" Type="DateTime" Precision="3" />
+          <Property Name="dateStop" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="TblRoles">
           <Key>
@@ -187,6 +280,89 @@
           <Property Name="levelPosition" Type="Int32" Nullable="false" />
           <Property Name="superiorId" Type="Int32" />
         </EntityType>
+        <EntityType Name="TblWorkOperational">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="planSites" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="taskType" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="issueDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="unitOrArea" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="reportedOn" Type="DateTime" Precision="3" />
+          <Property Name="requestedOn" Type="DateTime" Precision="3" />
+          <Property Name="reportedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="reportedByDepartment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="actionStart" Type="DateTime" Precision="3" />
+          <Property Name="actionFinish" Type="DateTime" Precision="3" />
+          <Property Name="actionFinishActual" Type="DateTime" Precision="3" />
+          <Property Name="durationPlanned" Type="Int32" />
+          <Property Name="durationActual" Type="Int32" />
+          <Property Name="PIC" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PICworkers" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="troubleshootResult" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="rootCause" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="correctiveAction" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdOn" Type="DateTime" Precision="3" />
+          <Property Name="dlt" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TblUserActivity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="jobType" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="badgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="fullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="section" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="startDatetime" Type="DateTime" Precision="3" />
+          <Property Name="stopDatetime" Type="DateTime" Precision="3" />
+          <Property Name="duration" Type="Int32" />
+          <Property Name="taskId" Type="Int32" />
+          <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TblTasks">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="taskDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="isActive" Type="Boolean" Nullable="false" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="createdOn" Type="DateTime" Precision="3" />
+          <Property Name="createdBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TblProjectSubmission">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="project_title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="requesting_department" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="project_initiator" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="strategy_objective" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="site_location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="problem_statement" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="status_summary" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="priority" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="cumulative_percentage" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="budget_planned" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="budget_actual" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="budget_remaining" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="budget_status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="otd" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="planned_start_date" Type="DateTime" Precision="3" />
+          <Property Name="planned_completion_date" Type="DateTime" Precision="3" />
+          <Property Name="actual_start_date" Type="DateTime" Precision="3" />
+          <Property Name="actual_completion_date" Type="DateTime" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -196,11 +372,12 @@
           <EntitySetMapping Name="TblActivityLog">
             <EntityTypeMapping TypeName="TaskLogModel.TblActivityLog">
               <MappingFragment StoreEntitySet="TblActivityLog">
-                <ScalarProperty Name="deletedBy" ColumnName="deletedBy" />
-                <ScalarProperty Name="deleted" ColumnName="deleted" />
-                <ScalarProperty Name="dateRecorded" ColumnName="dateRecorded" />
-                <ScalarProperty Name="activityDescription" ColumnName="activityDescription" />
+                <ScalarProperty Name="dateStop" ColumnName="dateStop" />
+                <ScalarProperty Name="dateStart" ColumnName="dateStart" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="title" ColumnName="title" />
                 <ScalarProperty Name="ownerFullName" ColumnName="ownerFullName" />
+                <ScalarProperty Name="ownerBadgeId" ColumnName="ownerBadgeId" />
                 <ScalarProperty Name="ownerId" ColumnName="ownerId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -277,6 +454,93 @@
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="username" ColumnName="username" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblWorkOperational">
+            <EntityTypeMapping TypeName="TaskLogModel.TblWorkOperational">
+              <MappingFragment StoreEntitySet="TblWorkOperational">
+                <ScalarProperty Name="dlt" ColumnName="dlt" />
+                <ScalarProperty Name="createdOn" ColumnName="createdOn" />
+                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="correctiveAction" ColumnName="correctiveAction" />
+                <ScalarProperty Name="rootCause" ColumnName="rootCause" />
+                <ScalarProperty Name="troubleshootResult" ColumnName="troubleshootResult" />
+                <ScalarProperty Name="PICworkers" ColumnName="PICworkers" />
+                <ScalarProperty Name="PIC" ColumnName="PIC" />
+                <ScalarProperty Name="durationActual" ColumnName="durationActual" />
+                <ScalarProperty Name="durationPlanned" ColumnName="durationPlanned" />
+                <ScalarProperty Name="actionFinishActual" ColumnName="actionFinishActual" />
+                <ScalarProperty Name="actionFinish" ColumnName="actionFinish" />
+                <ScalarProperty Name="actionStart" ColumnName="actionStart" />
+                <ScalarProperty Name="reportedByDepartment" ColumnName="reportedByDepartment" />
+                <ScalarProperty Name="reportedBy" ColumnName="reportedBy" />
+                <ScalarProperty Name="requestedOn" ColumnName="requestedOn" />
+                <ScalarProperty Name="reportedOn" ColumnName="reportedOn" />
+                <ScalarProperty Name="unitOrArea" ColumnName="unitOrArea" />
+                <ScalarProperty Name="issueDescription" ColumnName="issueDescription" />
+                <ScalarProperty Name="taskType" ColumnName="taskType" />
+                <ScalarProperty Name="planSites" ColumnName="planSites" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblUserActivity">
+            <EntityTypeMapping TypeName="TaskLogModel.TblUserActivity">
+              <MappingFragment StoreEntitySet="TblUserActivity">
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />
+                <ScalarProperty Name="taskId" ColumnName="taskId" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="stopDatetime" ColumnName="stopDatetime" />
+                <ScalarProperty Name="startDatetime" ColumnName="startDatetime" />
+                <ScalarProperty Name="section" ColumnName="section" />
+                <ScalarProperty Name="fullName" ColumnName="fullName" />
+                <ScalarProperty Name="badgeId" ColumnName="badgeId" />
+                <ScalarProperty Name="jobType" ColumnName="jobType" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblTasks">
+            <EntityTypeMapping TypeName="TaskLogModel.TblTasks">
+              <MappingFragment StoreEntitySet="TblTasks">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
+                <ScalarProperty Name="createdOn" ColumnName="createdOn" />
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="taskDescription" ColumnName="taskDescription" />
+                <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblProjectSubmission">
+            <EntityTypeMapping TypeName="TaskLogModel.TblProjectSubmission">
+              <MappingFragment StoreEntitySet="TblProjectSubmission">
+                <ScalarProperty Name="actual_completion_date" ColumnName="actual_completion_date" />
+                <ScalarProperty Name="actual_start_date" ColumnName="actual_start_date" />
+                <ScalarProperty Name="planned_completion_date" ColumnName="planned_completion_date" />
+                <ScalarProperty Name="planned_start_date" ColumnName="planned_start_date" />
+                <ScalarProperty Name="otd" ColumnName="otd" />
+                <ScalarProperty Name="budget_status" ColumnName="budget_status" />
+                <ScalarProperty Name="budget_remaining" ColumnName="budget_remaining" />
+                <ScalarProperty Name="budget_actual" ColumnName="budget_actual" />
+                <ScalarProperty Name="budget_planned" ColumnName="budget_planned" />
+                <ScalarProperty Name="cumulative_percentage" ColumnName="cumulative_percentage" />
+                <ScalarProperty Name="priority" ColumnName="priority" />
+                <ScalarProperty Name="status_summary" ColumnName="status_summary" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="problem_statement" ColumnName="problem_statement" />
+                <ScalarProperty Name="site_location" ColumnName="site_location" />
+                <ScalarProperty Name="strategy_objective" ColumnName="strategy_objective" />
+                <ScalarProperty Name="project_initiator" ColumnName="project_initiator" />
+                <ScalarProperty Name="requesting_department" ColumnName="requesting_department" />
+                <ScalarProperty Name="project_title" ColumnName="project_title" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
