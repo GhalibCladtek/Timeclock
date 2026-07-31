@@ -3,6 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var responsibleSection = new List<SelectListItem>();
     responsibleSection.Add(new SelectListItem() { Text = "-", Value = "" });
+    responsibleSection.Add(new SelectListItem() { Text = "Electrical", Value = "Electrical" });
     responsibleSection.Add(new SelectListItem() { Text = "Automation", Value = "Automation" });
     responsibleSection.Add(new SelectListItem() { Text = "SCADA", Value = "SCADA" });
     responsibleSection.Add(new SelectListItem() { Text = "Design", Value = "Design" });
@@ -142,6 +143,7 @@
         loadHistory();
 
         tbl = new DataTable($('#historyTable'), {
+            scrollX: true,
             "columnDefs": [
                 { "className": "dt-center", "targets": "_all" }
             ],
@@ -168,8 +170,6 @@
     }
 
     function showRunningPanel(task) {
-        debugger;
-        console.log(task);
         $('#noTaskPanel').hide();
         $('#runningTaskPanel').show();
 
