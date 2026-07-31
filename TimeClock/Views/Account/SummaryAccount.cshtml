@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "SummaryAccount";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .content-wrapper {
+        min-height: 80vh !important; /* Forces the main content area to fill the screen viewport */
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="container mt-4">
+        <section class="content-header">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-0">Summary Account</h4>
+                    <small class="text-muted">Registered</small>
+                </div>
+                <span class="btn btn-primary float-right" onclick="registerAcc(-1)">Register New</span>
+            </div>
+        </section>
+        <section class="content">
+            <div class="card">
+                <div class="card-header">Account List</div>
+                <div class="card-body">
+                    <table class="table table-sm table-striped" id="accountTbl">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Action</th>
+                                <th>BadgeId</th>
+                                <th>Full Name</th>
+                                <th>Title</th>
+                                <th>Level</th>
+                                <th>Is Active</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<div id="divRegister"></div>
+
+<script>
+    let isSubmitting = false;
+    var tbl = null;
+    $(document).ready(function () {
+        tbl = new DataTable($('#accountTbl'), {
+            "columnDefs": [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+        });
+        getAccList();
+    });
+
+    function getAccList() {
+        $.get('@Url.Action("GetListAccount")', {}, (res) => {
+            if (res.flag == 'success') {
+                if (res.data && res.data.length > 0) {
+                    tbl.clear();
+                    for (var i = 0; i < res.data.length; i++) {
+                        tbl.row.add([
+                            res.data[i].uid,
+                            '<span class="btn btn-warning" title="edit" onclick="registerAcc(' + res.data[i].uid + ')"><i class="fas fa-edit"></i></span>' +
+                            '<span class="btn btn-danger" title="reset password" onclick="resPass(' + res.data[i].uid + ')"><i class="fas fa-key"></i></span>',
+                            res.data[i].badge,
+                            res.data[i].fname,
+                            res.data[i].title,
+                            res.data[i].level,
+                            res.data[i].active ? '<span class="btn btn-success" onclick="setStatusAcc(' + res.data[i].uid + ')">Active</span>' : '<span class="btn btn-danger" onclick="setStatusAcc(' + res.data[i].uid + ')">Not Active</span>'
+                        ]);
+                    }
+                    tbl.draw();
+                }
+            } else if (res.flag == 'error') {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+    function registerAcc(id) {
+        $.get('@Url.Action("Register")', { id: id }, (res) => {
+            if (!res.flag) {
+                $('#divRegister').html(res);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function resPass(id) {
+        $.get('@Url.Action("ResetPassword")', { id: id }, (res) => {
+            notify(res.msg, res.flag);
+            console.log(res.data);
+        });
+    }
+
+
+</script>

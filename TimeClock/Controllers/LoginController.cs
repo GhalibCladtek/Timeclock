@@ -32,6 +32,7 @@ namespace TimeClock.Controllers
                     {
                         if (BCrypt.Net.BCrypt.Verify(pass, data.password))
                         {
+                            if(!data.isActive) return Json(new { flag = JsonResponseStandart.failed, msg = "Your account is not active. Please contact SCADA Team.", data = "" });
                             Session["Id"] = data.Id;
                             Session["Username"] = data.username;
                             Session["BadgeId"] = data.badgeId;

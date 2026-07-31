@@ -14,7 +14,7 @@ namespace TimeClock.Models
     
     public partial class TblProjectSubmission
     {
-        public int id { get; set; }
+        public string unique_id { get; set; }
         public string project_title { get; set; }
         public string requesting_department { get; set; }
         public string project_initiator { get; set; }

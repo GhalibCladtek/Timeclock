@@ -20,9 +20,9 @@
         </EntityType>
         <EntityType Name="TblProjectSubmission">
           <Key>
-            <PropertyRef Name="id" />
+            <PropertyRef Name="unique_id" />
           </Key>
-          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="unique_id" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="project_title" Type="nvarchar(max)" />
           <Property Name="requesting_department" Type="nvarchar(max)" />
           <Property Name="project_initiator" Type="nvarchar(max)" />
@@ -100,19 +100,6 @@
           <Property Name="deletedAt" Type="datetime" />
           <Property Name="deletedBy" Type="varchar(max)" />
         </EntityType>
-        <EntityType Name="TblTasks">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="taskTitle" Type="varchar(max)" />
-          <Property Name="taskDescription" Type="varchar(max)" />
-          <Property Name="isActive" Type="bit" Nullable="false" />
-          <Property Name="remarks" Type="varchar(max)" />
-          <Property Name="createdOn" Type="datetime" />
-          <Property Name="createdBy" Type="varchar(max)" />
-          <Property Name="status" Type="varchar(max)" />
-        </EntityType>
         <EntityType Name="TblUserActivity">
           <Key>
             <PropertyRef Name="Id" />
@@ -125,7 +112,7 @@
           <Property Name="startDatetime" Type="datetime" />
           <Property Name="stopDatetime" Type="datetime" />
           <Property Name="duration" Type="int" />
-          <Property Name="taskId" Type="int" />
+          <Property Name="taskId" Type="varchar(max)" />
           <Property Name="taskTitle" Type="varchar(max)" />
           <Property Name="remarks" Type="varchar(max)" />
         </EntityType>
@@ -138,9 +125,11 @@
           <Property Name="password" Type="varchar(max)" />
           <Property Name="badgeId" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="fullName" Type="varchar(max)" />
-          <Property Name="title" Type="varchar" MaxLength="50" />
+          <Property Name="title" Type="varchar(max)" />
+          <Property Name="role" Type="varchar" MaxLength="100" />
           <Property Name="levelPosition" Type="int" Nullable="false" />
           <Property Name="superiorId" Type="int" />
+          <Property Name="isActive" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TblWorkOperational">
           <Key>
@@ -177,7 +166,6 @@
           <EntitySet Name="TblRoles" EntityType="Self.TblRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblTaskByIndividual" EntityType="Self.TblTaskByIndividual" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblTaskBySuperior" EntityType="Self.TblTaskBySuperior" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TblTasks" EntityType="Self.TblTasks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblUserActivity" EntityType="Self.TblUserActivity" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblUsers" EntityType="Self.TblUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblWorkOperational" EntityType="Self.TblWorkOperational" Schema="dbo" store:Type="Tables" />
@@ -191,11 +179,10 @@
           <EntitySet Name="TblRoles" EntityType="TaskLogModel.TblRoles" />
           <EntitySet Name="TblTaskByIndividual" EntityType="TaskLogModel.TblTaskByIndividual" />
           <EntitySet Name="TblTaskBySuperior" EntityType="TaskLogModel.TblTaskBySuperior" />
-          <EntitySet Name="TblUsers" EntityType="TaskLogModel.TblUsers" />
-          <EntitySet Name="TblWorkOperational" EntityType="TaskLogModel.TblWorkOperational" />
           <EntitySet Name="TblUserActivity" EntityType="TaskLogModel.TblUserActivity" />
-          <EntitySet Name="TblTasks" EntityType="TaskLogModel.TblTasks" />
+          <EntitySet Name="TblWorkOperational" EntityType="TaskLogModel.TblWorkOperational" />
           <EntitySet Name="TblProjectSubmission" EntityType="TaskLogModel.TblProjectSubmission" />
+          <EntitySet Name="TblUsers" EntityType="TaskLogModel.TblUsers" />
         </EntityContainer>
         <EntityType Name="TblActivityLog">
           <Key>
@@ -267,18 +254,21 @@
           <Property Name="deletedAt" Type="DateTime" Precision="3" />
           <Property Name="deletedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
-        <EntityType Name="TblUsers">
+        <EntityType Name="TblUserActivity">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="badgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="jobType" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="badgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="fullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="levelPosition" Type="Int32" Nullable="false" />
-          <Property Name="superiorId" Type="Int32" />
+          <Property Name="section" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="startDatetime" Type="DateTime" Precision="3" />
+          <Property Name="stopDatetime" Type="DateTime" Precision="3" />
+          <Property Name="duration" Type="Int32" />
+          <Property Name="taskId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="TblWorkOperational">
           <Key>
@@ -309,40 +299,11 @@
           <Property Name="createdOn" Type="DateTime" Precision="3" />
           <Property Name="dlt" Type="Boolean" Nullable="false" />
         </EntityType>
-        <EntityType Name="TblUserActivity">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="jobType" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="badgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="fullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="section" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="startDatetime" Type="DateTime" Precision="3" />
-          <Property Name="stopDatetime" Type="DateTime" Precision="3" />
-          <Property Name="duration" Type="Int32" />
-          <Property Name="taskId" Type="Int32" />
-          <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="TblTasks">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="taskDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="isActive" Type="Boolean" Nullable="false" />
-          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="createdOn" Type="DateTime" Precision="3" />
-          <Property Name="createdBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="TblProjectSubmission">
           <Key>
-            <PropertyRef Name="id" />
+            <PropertyRef Name="unique_id" />
           </Key>
-          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="unique_id" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="project_title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="requesting_department" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="project_initiator" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -362,6 +323,21 @@
           <Property Name="planned_completion_date" Type="DateTime" Precision="3" />
           <Property Name="actual_start_date" Type="DateTime" Precision="3" />
           <Property Name="actual_completion_date" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="TblUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="badgeId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="fullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="role" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="levelPosition" Type="Int32" Nullable="false" />
+          <Property Name="superiorId" Type="Int32" />
+          <Property Name="isActive" Type="Boolean" Nullable="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -443,16 +419,19 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TblUsers">
-            <EntityTypeMapping TypeName="TaskLogModel.TblUsers">
-              <MappingFragment StoreEntitySet="TblUsers">
-                <ScalarProperty Name="superiorId" ColumnName="superiorId" />
-                <ScalarProperty Name="levelPosition" ColumnName="levelPosition" />
-                <ScalarProperty Name="title" ColumnName="title" />
+          <EntitySetMapping Name="TblUserActivity">
+            <EntityTypeMapping TypeName="TaskLogModel.TblUserActivity">
+              <MappingFragment StoreEntitySet="TblUserActivity">
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />
+                <ScalarProperty Name="taskId" ColumnName="taskId" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="stopDatetime" ColumnName="stopDatetime" />
+                <ScalarProperty Name="startDatetime" ColumnName="startDatetime" />
+                <ScalarProperty Name="section" ColumnName="section" />
                 <ScalarProperty Name="fullName" ColumnName="fullName" />
                 <ScalarProperty Name="badgeId" ColumnName="badgeId" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="jobType" ColumnName="jobType" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -487,37 +466,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TblUserActivity">
-            <EntityTypeMapping TypeName="TaskLogModel.TblUserActivity">
-              <MappingFragment StoreEntitySet="TblUserActivity">
-                <ScalarProperty Name="remarks" ColumnName="remarks" />
-                <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />
-                <ScalarProperty Name="taskId" ColumnName="taskId" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="stopDatetime" ColumnName="stopDatetime" />
-                <ScalarProperty Name="startDatetime" ColumnName="startDatetime" />
-                <ScalarProperty Name="section" ColumnName="section" />
-                <ScalarProperty Name="fullName" ColumnName="fullName" />
-                <ScalarProperty Name="badgeId" ColumnName="badgeId" />
-                <ScalarProperty Name="jobType" ColumnName="jobType" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TblTasks">
-            <EntityTypeMapping TypeName="TaskLogModel.TblTasks">
-              <MappingFragment StoreEntitySet="TblTasks">
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="createdBy" ColumnName="createdBy" />
-                <ScalarProperty Name="createdOn" ColumnName="createdOn" />
-                <ScalarProperty Name="remarks" ColumnName="remarks" />
-                <ScalarProperty Name="isActive" ColumnName="isActive" />
-                <ScalarProperty Name="taskDescription" ColumnName="taskDescription" />
-                <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="TblProjectSubmission">
             <EntityTypeMapping TypeName="TaskLogModel.TblProjectSubmission">
               <MappingFragment StoreEntitySet="TblProjectSubmission">
@@ -540,7 +488,23 @@
                 <ScalarProperty Name="project_initiator" ColumnName="project_initiator" />
                 <ScalarProperty Name="requesting_department" ColumnName="requesting_department" />
                 <ScalarProperty Name="project_title" ColumnName="project_title" />
-                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="unique_id" ColumnName="unique_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblUsers">
+            <EntityTypeMapping TypeName="TaskLogModel.TblUsers">
+              <MappingFragment StoreEntitySet="TblUsers">
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="superiorId" ColumnName="superiorId" />
+                <ScalarProperty Name="levelPosition" ColumnName="levelPosition" />
+                <ScalarProperty Name="role" ColumnName="role" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="fullName" ColumnName="fullName" />
+                <ScalarProperty Name="badgeId" ColumnName="badgeId" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -35,7 +35,8 @@ namespace TimeClock.Modul
                 }
                 catch (Exception ex)
                 {
-                    return new List<Submission>();
+                    throw ex;
+                    //return new List<Submission>();
                 }
             }
         }

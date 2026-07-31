@@ -48,8 +48,8 @@ namespace TimeClock.Controllers
             using (var db = new TaskLogEntities())
             {
                 var tasks = db.TblProjectSubmission
-                    .OrderBy(t => t.id)
-                    .Select(t => new { Id = t.id, taskTitle = t.project_title })
+                    .OrderBy(t => t.unique_id)
+                    .Select(t => new { Id = t.unique_id, taskTitle = t.project_title })
                     .ToList();
 
                 return Json(new { flag = JsonResponseStandart.success, msg = "", data = tasks }, JsonRequestBehavior.AllowGet);
@@ -69,7 +69,7 @@ namespace TimeClock.Controllers
         // POST: Tracker/StartTask
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult StartTask(int taskId, string jobType, string section, string remarks)
+        public JsonResult StartTask(string taskId, string jobType, string section, string remarks)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace TimeClock.Controllers
                 if (string.IsNullOrEmpty(badgeId))
                     return Json(new { flag = JsonResponseStandart.failed, msg = "Session expired. Please log in again.", data = "" });
 
-                if (taskId <= 0 || string.IsNullOrWhiteSpace(jobType))
+                if (string.IsNullOrWhiteSpace(taskId) || string.IsNullOrWhiteSpace(jobType))
                     return Json(new { flag = JsonResponseStandart.failed, msg = "Please choose a task and job type.", data = "" });
 
                 var now = DateTime.Now;
@@ -103,9 +103,9 @@ namespace TimeClock.Controllers
                     if (alreadyRunning)
                         return Json(new { flag = JsonResponseStandart.failed, msg = "You already have a running task. Please stop it before starting a new one.", data = "" });
 
-                    var task = db.TblProjectSubmission.FirstOrDefault(t => t.id == taskId);
-                    //if (task == null)
-                    //    return Json( new { flag = JsonResponseStandart.failed, msg = "Selected task no longer exists.", data = "" });
+                    var task = db.TblProjectSubmission.FirstOrDefault(t => t.unique_id == taskId);
+                    if (task == null)
+                        return Json(new { flag = JsonResponseStandart.failed, msg = "Selected task no longer exists.", data = "" });
 
                     var log = new TblUserActivity
                     {
@@ -116,7 +116,7 @@ namespace TimeClock.Controllers
                         startDatetime = now,
                         stopDatetime = null,
                         duration = null,
-                        taskId = task.id,
+                        taskId = task.unique_id,
                         taskTitle = task.project_title,
                         remarks = remarks
                     };
@@ -194,5 +194,23 @@ namespace TimeClock.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult GetProjectDetail(string unique_id) {
+            try
+            {
+                using (var db = new TaskLogEntities())
+                {
+                    var project = db.TblProjectSubmission.FirstOrDefault(x => x.unique_id == unique_id);
+                    if(project == null) 
+                        return Json(new { flag = JsonResponseStandart.failed, msg = "Project not found.", data = "" }, JsonRequestBehavior.AllowGet);
+                    
+                    return Json(new { flag = JsonResponseStandart.success, msg = "Project found.", data = project }, JsonRequestBehavior.AllowGet);
+                }
+            } 
+            catch(Exception ex)
+            {
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex?.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

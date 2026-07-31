@@ -29,10 +29,9 @@ namespace TimeClock.Models
         public virtual DbSet<TblRoles> TblRoles { get; set; }
         public virtual DbSet<TblTaskByIndividual> TblTaskByIndividual { get; set; }
         public virtual DbSet<TblTaskBySuperior> TblTaskBySuperior { get; set; }
-        public virtual DbSet<TblUsers> TblUsers { get; set; }
-        public virtual DbSet<TblWorkOperational> TblWorkOperational { get; set; }
         public virtual DbSet<TblUserActivity> TblUserActivity { get; set; }
-        public virtual DbSet<TblTasks> TblTasks { get; set; }
+        public virtual DbSet<TblWorkOperational> TblWorkOperational { get; set; }
         public virtual DbSet<TblProjectSubmission> TblProjectSubmission { get; set; }
+        public virtual DbSet<TblUsers> TblUsers { get; set; }
     }
 }

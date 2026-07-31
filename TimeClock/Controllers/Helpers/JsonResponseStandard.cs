@@ -10,5 +10,9 @@ namespace TimeClock.Helpers
         public const string success = "success";
         public const string failed = "failed";
         public const string error = "error";
+        public static string errorMsg(string msg)
+        {
+            return "An error has occured." + msg;
+        }
     }
 }

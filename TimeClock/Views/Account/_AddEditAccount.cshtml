@@ -1,0 +1,155 @@
+﻿@model TimeClock.Models.TblUsers
+<!-- MODAL -->
+<div class="modal fade" id="modalRegister">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@ViewBag.Title</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(x => x.Id)
+                <div class="form-group">
+                    <label class="control-label">Badge ID</label>
+                    <input class="form-control" id="badge" type="text" autocomplete="x" value="@Model.badgeId"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Full Name</label>
+                    <input class="form-control" id="fullname" type="text" autocomplete="x" value="@Model.fullName"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Title</label>
+                    <input class="form-control" id="title" type="text" autocomplete="x" value="@Model.title"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Password</label>
+                    <input class="form-control" id="password1" type="password" autocomplete="x" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Retype Password</label>
+                    <input class="form-control" id="password2" type="password" autocomplete="new-password" />
+                    <p id="passAlert" class="text-danger"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button id="btnSubmitRegister" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(() => {
+        $('#modalRegister').modal('show');
+        if ('@ViewBag.Mode' == 'EDIT') {
+            $('#modalRegister #badge').prop('readonly', true);
+        }
+    });
+    function antiForgeryToken() {
+        return $('input[name="__RequestVerificationToken"]').val();
+    }
+
+    $('#modalRegister').on('show.bs.modal', function () {
+        $('.select2').css('width', '100%');
+        $('.select2').select2({ theme: 'bootstrap4' });
+    });
+
+    $("#password1, #password2").on("keyup", function () {
+        validatePassword();
+    });
+
+    function validatePassword() {
+        let pass1 = $("#modalRegister #password1").val();
+        let pass2 = $("#modalRegister #password2").val();
+        let $alert = $("#modalRegister #passAlert");
+
+        if ('@ViewBag.Mode' == 'EDIT' && pass1.length == 0 && pass2.length == 0) {
+            return true;
+        }
+        // Reset classes just in case we change it to green for success
+        $alert.removeClass("text-success").addClass("text-danger");
+
+        // 1. Check if it's completely empty
+        if (pass1.length === 0) {
+            $alert.text(""); // Clear message if empty
+            return false;
+        }
+
+        // 2. Check minimum length
+        if (pass1.length < 4) {
+            $alert.text("Password must be at least 4 characters long.");
+            return false;
+        }
+
+        // 3. Check if passwords match (only if they started typing in the second box)
+        if (pass2.length > 0 && pass1 !== pass2) {
+            $alert.text("Passwords do not match.");
+            return false;
+        }
+
+        // 4. Success state
+        if (pass1.length >= 4 && pass1 === pass2) {
+            $alert.removeClass("text-danger").addClass("text-success");
+            $alert.text("Passwords match!");
+            return true;
+        }
+
+        // Default fallback if they haven't started typing in the second box yet
+        $alert.text("");
+        return false;
+    }
+
+    $('#btnSubmitRegister').on('click', (e) => {
+        debugger;
+        if (validatePassword()) {
+            e.preventDefault();
+
+            if (!$("#modalRegister #badge").val().trim()) {
+                toastr.warning('Badge ID cannot be empty');
+                return;
+            }
+            if (!$("#modalRegister #fullname").val().trim()) {
+                toastr.warning('Name cannot be empty');
+                return;
+            }
+
+            if ($("#modalRegister #password1").val().length < 4 && ('@ViewBag.Mode' == 'EDIT' && $("#modalRegister #password1").length == 0 && $("#modalRegister #password2").length == 0)) {
+                $("#modalRegister #passAlert").text("Password must be at least 4 characters long.");
+                return;
+            }
+
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            let $btn = $("#modalRegister #btnSubmitRegister");
+            let originalText = $btn.text();
+            $btn.prop("disabled", true).text("Saving...");
+
+            $.post('@Url.Action("SaveRegister")', {
+                __RequestVerificationToken: antiForgeryToken()
+                , Id: $("#modalRegister #Id").val()
+                , badgeId: $("#modalRegister #badge").val()
+                , fullName: $("#modalRegister #fullname").val()
+                , title: $("#modalRegister #title").val()
+                , password: $("#modalRegister #password1").val()
+            }, (res) => {
+                if (res.flag == 'success') {
+                    notify(res.msg, res.flag);
+                    getAccList();
+                    isSubmitting = false;
+                    $btn.prop("disabled", false).text(originalText);
+                    $("#modalRegister").modal('hide');
+                } else {
+                    notify(res.msg, res.flag);
+                    console.log(res.data);
+                    isSubmitting = false;
+                    $btn.prop("disabled", false).text(originalText);
+                }
+            }).fail(function () {
+                notify("A network error occurred. Please try again.", "error");
+                isSubmitting = false;
+                $btn.prop("disabled", false).text(originalText);
+            });
+        }
+    });
+</script>

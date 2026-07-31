@@ -190,9 +190,6 @@
     <Compile Include="Models\TblTaskBySuperior.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\TblTasks.cs">
-      <DependentUpon>TaskLogDb.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\TblUserActivity.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
@@ -2329,6 +2326,9 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\WorkOperation\Index.cshtml" />
     <Content Include="Views\Tracker\Index.cshtml" />
+    <Content Include="Views\Account\SummaryAccount.cshtml" />
+    <Content Include="Views\Account\_AddEditAccount.cshtml" />
+    <Content Include="Views\Account\MyProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

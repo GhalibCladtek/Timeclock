@@ -27,10 +27,10 @@ namespace TimeClock.Controllers
                         {
                             try
                             {
-                                var existingDbProjects = db.TblProjectSubmission.ToDictionary(x => x.id);
-                                var apiProjectIds = new HashSet<int>(submissionsData.Select(x => x.id));
+                                var existingDbProjects = db.TblProjectSubmission.ToDictionary(x => x.unique_id);
+                                var apiProjectIds = new HashSet<string>(submissionsData.Select(x => x.unique_id));
 
-                                var projectsToDelete = existingDbProjects.Values.Where(local => !apiProjectIds.Contains(local.id)).ToList();
+                                var projectsToDelete = existingDbProjects.Values.Where(local => !apiProjectIds.Contains(local.unique_id)).ToList();
 
                                 if (projectsToDelete.Any())
                                 {
@@ -41,7 +41,7 @@ namespace TimeClock.Controllers
                                 foreach (var i in submissionsData)
                                 {
                                     idTemp++;
-                                    if (existingDbProjects.TryGetValue(i.id, out var project))
+                                    if (existingDbProjects.TryGetValue(i.unique_id, out var project))
                                     {
                                         // Update Existing
                                         project.project_title = i.project_title;
@@ -69,7 +69,7 @@ namespace TimeClock.Controllers
                                         // Insert New
                                         var newProj = new TblProjectSubmission
                                         {
-                                            id = idTemp,
+                                            unique_id = i.unique_id,
                                             project_title = i.project_title,
                                             requesting_department = i.requesting_department,
                                             project_initiator = i.project_initiator,

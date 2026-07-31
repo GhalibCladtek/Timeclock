@@ -9,11 +9,10 @@
         <EntityTypeShape EntityType="TaskLogModel.TblRoles" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="TaskLogModel.TblTaskByIndividual" Width="1.5" PointX="2.75" PointY="3.75" />
         <EntityTypeShape EntityType="TaskLogModel.TblTaskBySuperior" Width="1.5" PointX="4.75" PointY="0.75" />
-        <EntityTypeShape EntityType="TaskLogModel.TblUsers" Width="1.5" PointX="6.75" PointY="0.75" />
-        <EntityTypeShape EntityType="TaskLogModel.TblWorkOperational" Width="1.5" PointX="5.375" PointY="6.75" />
-        <EntityTypeShape EntityType="TaskLogModel.TblUserActivity" Width="1.5" PointX="7.375" PointY="4.75" />
-        <EntityTypeShape EntityType="TaskLogModel.TblTasks" Width="1.5" PointX="7.375" PointY="8.75" />
-        <EntityTypeShape EntityType="TaskLogModel.TblProjectSubmission" Width="1.5" PointX="9.375" PointY="0.75" />
+        <EntityTypeShape EntityType="TaskLogModel.TblUserActivity" Width="1.5" PointX="6.75" PointY="0.75" />
+        <EntityTypeShape EntityType="TaskLogModel.TblWorkOperational" Width="1.5" PointX="8.75" PointY="0.75" />
+        <EntityTypeShape EntityType="TaskLogModel.TblProjectSubmission" Width="1.5" PointX="5.375" PointY="8.75" />
+        <EntityTypeShape EntityType="TaskLogModel.TblUsers" Width="1.5" PointX="7.375" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -6,32 +6,12 @@
     responsibleSection.Add(new SelectListItem() { Text = "Automation", Value = "Automation" });
     responsibleSection.Add(new SelectListItem() { Text = "SCADA", Value = "SCADA" });
     responsibleSection.Add(new SelectListItem() { Text = "Design", Value = "Design" });
+    responsibleSection.Add(new SelectListItem() { Text = "Technical Writer", Value = "Technical Writer" });
+    responsibleSection.Add(new SelectListItem() { Text = "Commisioning", Value = "Commisioning" });
     responsibleSection.Add(new SelectListItem() { Text = "Other", Value = "Other" });
 }
-<style>
-    /* 1. Force standard Bootstrap border on the Select2 box */
-    .select2-container--default .select2-selection--single {
-        border: 1px solid #ced4da !important; /* Standard Bootstrap grey */
-        border-radius: 0.25rem !important; /* Standard Bootstrap rounded corners */
-    }
-
-    /* 2. Fix the broken focus glow when you click it */
-    .select2-container--default.select2-container--focus .select2-selection--single,
-    .select2-container--default.select2-container--open .select2-selection--single {
-        border-color: #80bdff !important; /* Bootstrap blue border */
-        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25) !important; /* Bootstrap blue glow */
-        outline: none !important;
-    }
-
-    /* 3. Hide the weird inner blue line from your screenshot */
-    .select2-selection {
-        outline: none !important;
-    }
-</style>
-
 @Html.AntiForgeryToken()
 <div class="content-wrapper">
-
     <div class="container mt-4">
         <section class="content-header">
 
@@ -41,7 +21,8 @@
                     <small class="text-muted">Badge: @ViewBag.BadgeId &middot; @ViewBag.Section</small>
                 </div>
             </div>
-
+        </section>
+        <section class="content">
             <!-- STATE PANEL: no task running -->
             <div id="noTaskPanel" class="card border-secondary mb-4" style="display:none;">
                 <div class="card-body">
@@ -70,8 +51,6 @@
                     </div>
                 </div>
             </div>
-        </section>
-        <section class="content">
             <!-- HISTORY -->
             <div class="card">
                 <div class="card-header">Activity History</div>
@@ -79,6 +58,7 @@
                     <table class="table table-sm table-striped" id="historyTable">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Task Title</th>
                                 <th>Job Type</th>
                                 <th>Start</th>
@@ -97,7 +77,7 @@
 </div>
 
 <!-- START TASK MODAL -->
-<div class="modal fade" id="startTaskModal" tabindex="-1">
+<div class="modal fade" id="startTaskModal" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -110,17 +90,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label col-lg-4">Project Name</label>
-                    <div class="col-lg-12">
-                        @Html.DropDownList("taskSelect", new List<SelectListItem>(), new { @id = "taskSelect", @class = "select2" })
-                    </div>
+                    <label class="control-label">Project Name</label>
+                    @Html.DropDownList("taskSelect", new List<SelectListItem>(), new { @id = "taskSelect", @class = "select2" })
                 </div>
-
+                <div id="projectDescription" class="alert alert-secondary">
+                </div>
                 <div class="form-group">
-                    <label class="control-label col-lg-4">Activity Section Type</label>
-                    <div class="col-lg-12">
-                        @Html.DropDownList("sectionSelect", responsibleSection, new { @id = "sectionSelect", @class = "select2" })
-                    </div>
+                    <label class="control-label">Activity Section Type</label>
+                    @Html.DropDownList("sectionSelect", responsibleSection, new { @id = "sectionSelect", @class = "select2" })
                 </div>
 
                 <div class="form-group">
@@ -169,11 +146,13 @@
                 { "className": "dt-center", "targets": "_all" }
             ],
         });
+        $('#projectDescription').hide();
     });
 
     $('#startTaskModal').on('show.bs.modal', function () {
         $('.select2').css('width', '100%');
-        $('.select2').select2({ dropdownParent: $('#startTaskModal') });
+        $('.select2').select2({ dropdownParent: $('#startTaskModal'), theme: 'bootstrap4'});
+        //$('.select2').select2({ dropdownParent: $('#startTaskModal') });
     });
 
     function antiForgeryToken() {
@@ -246,6 +225,7 @@
                 tbl.clear().draw();
                 for (var i = 0; i < res.data.items.length; i++) {
                     tbl.row.add([
+                        i+1,
                         res.data.items[i].taskTitle,
                         res.data.items[i].jobType,
                         moment(res.data.items[i].startDatetime).format('DD MMM YYYY HH:mm:ss'),
@@ -318,6 +298,7 @@
         loadTaskDropdown();
         applyJobTypeRules();
         $('#startTaskModal').modal('show');
+        $('#projectDescription').hide();
     });
 
     $('#btnConfirmStart').on('click', function () {
@@ -381,6 +362,10 @@
         });
     });
 
+    $('#taskSelect').on('change', (x, y) => {
+        getProjectDetail(x.target.value);
+    });
+
     function formatSeconds(totalSeconds) {
         const duration = moment.duration(totalSeconds, 'seconds');
         const hours = Math.floor(duration.asHours()); 
@@ -393,5 +378,27 @@
             seconds > 0 ? `${seconds}s` : null
         ].filter(Boolean); // Removes all null entries
         return parts.join(' ') || '0s';
+    }
+
+    function getProjectDetail(uid) {
+        $.get('@Url.Action("GetProjectDetail")', { unique_id: uid }, (res) => {
+            var content = "";
+            if (res.flag == 'success') {
+                content = '<p><b>Requesting Department</b> : ' + res.data.requesting_department 
+                    + '<br/><b>Project Initiator</b> : ' + (res.data.project_initiator ?? '-')
+                    + '<br/><b>Site</b> : ' + (res.data.site_location ?? '-')
+                    + '<br/><b>Objective</b> : ' + (res.data.strategy_objective ?? '-') + '</p>'
+                $('#projectDescription').html(content);
+                $('#projectDescription').show();
+            } else {
+                $('#projectDescription').html('');
+                $('#projectDescription').hide();
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        }).fail(() => {
+            $('#projectDescription').hide();
+            notify('An error occured because of the network instability. Please try again.', 'error');
+        });
     }
 </script>

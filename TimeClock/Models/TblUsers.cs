@@ -20,7 +20,9 @@ namespace TimeClock.Models
         public string badgeId { get; set; }
         public string fullName { get; set; }
         public string title { get; set; }
+        public string role { get; set; }
         public int levelPosition { get; set; }
         public Nullable<int> superiorId { get; set; }
+        public bool isActive { get; set; }
     }
 }

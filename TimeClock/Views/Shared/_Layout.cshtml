@@ -26,6 +26,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="~/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Select2 -->
     <link rel="stylesheet" href="~/adminlte/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- Flatpickr - Lightweight Date or Time Picker -->
     <link rel="stylesheet" href="~/adminlte/plugins/flatpickr/flatpickr.min.css">
     <!-- Datatable -->
@@ -47,7 +48,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Date Range Picker -->
     <script src="~/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
     <!-- Select2 -->
-    <script src="~/adminlte/plugins/select2/js/select2.min.js"></script>
+    <script src="~/adminlte/plugins/select2/js/select2.full.min.js"></script>
     <!-- Flatpickr - Lightweight Date or Time Picker -->
     <script src="~/adminlte/plugins/flatpickr/flatpickr.js"></script>
     <!-- Cookies Handler -->
@@ -111,11 +112,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
             opacity: 0.5;
             z-index: 99990;
         }
-
+/*
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
             background-color: #007bff;
             border-color: #006fe6;
-        }
+        }*/
     </style>
 
 </head>
@@ -145,10 +146,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         });
         $(document).ready(function () {
-            $("input[type=text]").keyup(function () {
-                $(this).val($(this).val().toUpperCase());
-            });
-
             if ('@TempData["message"]'.trim()) {
                 let type = '@TempData["code"]'.trim() ?? 'info';
                 notify('@TempData["message"]', type);

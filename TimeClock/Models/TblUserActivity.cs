@@ -22,7 +22,7 @@ namespace TimeClock.Models
         public Nullable<System.DateTime> startDatetime { get; set; }
         public Nullable<System.DateTime> stopDatetime { get; set; }
         public Nullable<int> duration { get; set; }
-        public Nullable<int> taskId { get; set; }
+        public string taskId { get; set; }
         public string taskTitle { get; set; }
         public string remarks { get; set; }
     }

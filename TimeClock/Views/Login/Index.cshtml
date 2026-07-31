@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-8">
+                        <div class="col-8" hidden>
                             <div class="icheck-primary">
                                 <input type="checkbox" id="rememberMe">
                                 <label for="rememberMe">
@@ -58,16 +58,16 @@
                             </div>
                         </div>
                         <!-- /.col -->
-                        <div class="col-4">
+                        <div class="col-12">
                             <button type="button" id="btnLogin" class="btn btn-primary btn-block">Sign In</button>
                         </div>
                         <!-- /.col -->
                     </div>
                 </form>
 
-                <p class="mb-1 text-center">
+                @*<p class="mb-1 text-center">
                     Doesn't have an account? <a href="#" id="btnRegister" class="text-center">Register here</a>
-                </p>
+                </p>*@
             </div>
             <!-- /.login-card-body -->
         </div>
@@ -91,13 +91,14 @@
 
     <script>
         let isSubmitting = false;
-
         $(document).ready(function () {
             $("#user").val(getCookie('AuthCookie'));
             if ('@TempData["message"]'.trim()) {
                 let type = '@TempData["code"]'.trim() ?? 'info';
                 notify('@TempData["message"]', type);
             }
+
+            $('#rememberMe').attr('checked', true);
         }).on('keydown', function (event) {
             if (event.key === 'Enter' || event.which === 13) {
                 event.preventDefault(); // Prevents default actions like submitting a form
@@ -131,7 +132,7 @@
                     }, 1500);
                     window.location.href = res.url;
                 } else {
-                    notify(res.msg, res.flag);
+                    notify("An error has occured. Detail: " + res.msg, res.flag);
                     console.log(res.data);
                     isSubmitting = false;
                     $btn.prop("disabled", false).text(originalText);
