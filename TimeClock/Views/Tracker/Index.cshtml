@@ -65,6 +65,7 @@
                                 <th>Start</th>
                                 <th>Stop</th>
                                 <th>Duration (min)</th>
+                                <th>Activity</th>
                                 <th>Remarks</th>
                             </tr>
                         </thead>
@@ -72,14 +73,13 @@
                     </table>
                 </div>
             </div>
-
         </section>
     </div>
 </div>
 
 <!-- START TASK MODAL -->
 <div class="modal fade" id="startTaskModal" data-backdrop="static">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Start Task</h5>
@@ -104,17 +104,21 @@
                 <div class="form-group">
                     <label>Job Type</label>
                     <div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="jobType" id="jobTypeDev" value="Development">
-                            <label class="form-check-label" for="jobTypeDev">Development</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="jobType" id="jobTypeOps" value="Operational">
-                            <label class="form-check-label" for="jobTypeOps">Operational</label>
+                        <div class="justify-content-around" style="display: flex">
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="jobTypeDev" name="jobType" checked="" value="Development">
+                                <label for="jobTypeDev">Development</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="jobTypeOps" name="jobType" checked="" value="Operational">
+                                <label for="jobTypeOps">Operational</label>
+                            </div>
                         </div>
                     </div>
+                <div class="form-group">
+                    <label class="control-label">Activity</label>
+                    @Html.DropDownList("activitySelect", new List<SelectListItem>(), new { @id = "activitySelect", @class = "select2" })
                 </div>
-
                 <div class="form-group">
                     <label>Remarks (optional)</label>
                     <textarea id="remarksInput" class="form-control" rows="2"></textarea>
@@ -137,10 +141,12 @@
     var CURRENT_FULL_NAME = '@ViewBag.FullName';
     var CURRENT_SECTION = '@ViewBag.Section';
     var tbl = null;
+
     $(document).ready(function () {
         // ---------- init ----------
         loadOpenTask();
         loadHistory();
+        loadSectionDropdown();
 
         tbl = new DataTable($('#historyTable'), {
             scrollX: true,
@@ -149,6 +155,7 @@
             ],
         });
         $('#projectDescription').hide();
+        $('#activitySelect').html('<option value="">-</option>').trigger('change');
     });
 
     $('#startTaskModal').on('show.bs.modal', function () {
@@ -231,22 +238,12 @@
                         moment(res.data.items[i].startDatetime).format('DD MMM YYYY HH:mm:ss'),
                         res.data.items[i].stopDatetime ? moment(res.data.items[i].stopDatetime).format('DD MMM YYYY HH:mm:ss') : '-',
                         res.data.items[i].duration ? formatSeconds(res.data.items[i].duration) : '-',
-                        res.data.items[i].remarks,
+                        res.data.items[i].activity ?? '-',
+                        res.data.items[i].remarks ?? '-',
 
                     ]);
                 }
                 tbl.draw();
-                //var rows = res.data.items.map(function (r) {
-                //    return '<tr>' +
-                //        '<td>' + r.taskTitle + '</td>' +
-                //        '<td>' + r.jobType + '</td>' +
-                //        '<td>' + new Date(r.startDatetime).toLocaleString() + '</td>' +
-                //        '<td>' + (r.stopDatetime ? new Date(r.stopDatetime).toLocaleString() : '-') + '</td>' +
-                //        '<td>' + (r.duration != null ? r.duration : '-') + '</td>' +
-                //        '<td>' + (r.remarks || '') + '</td>' +
-                //        '</tr>';
-                //}).join('');
-                //$('#historyTable tbody').html(rows);
             } else if(res.flag == 'error') {
                 notify(res.msg, res.flag);
                 console.log(res.data);
@@ -262,6 +259,36 @@
                 }).join('');
                 opts = '<option value="">-</option>' + opts;
                 $('#taskSelect').html(opts);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function loadSectionDropdown() {
+        $.get('/Tracker/GetSection', function (res) {
+            if (res.flag == 'success') {
+                var opts = res.data.map(function (t) {
+                    return '<option value="' + t + '">' + t + '</option>';
+                }).join('');
+                opts = '<option value="">-</option>' + opts;
+                $('#sectionSelect').html(opts);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function loadActivityDropdown(section) {
+        $.get('/Tracker/GetActivityType', { section: section }, function (res) {
+            if (res.flag == 'success') {
+                var opts = res.data.map(function (t) {
+                    return '<option value="' + t + '">' + t + '</option>';
+                }).join('');
+                opts = '<option value="">-</option>' + opts;
+                $('#activitySelect').html(opts).trigger('change');
             } else {
                 notify(res.msg, res.flag);
                 console.log(res.data);
@@ -291,7 +318,6 @@
     }
 
     // ---------- actions ----------
-
     $('#btnOpenStartModal').on('click', function () {
         $('#startTaskError').hide();
         $('#remarksInput').val('');
@@ -301,10 +327,12 @@
         $('#projectDescription').hide();
     });
 
-    $('#btnConfirmStart').on('click', function () {
+    $('#btnConfirmStart').on('click', function (e) {
+        e.preventDefault();
         var taskId = $('#taskSelect').val();
         var section = $('#sectionSelect').val();
         var jobType = $('input[name="jobType"]:checked').val();
+        var activity = $('#activitySelect').val();
         var remarks = $('#remarksInput').val();
 
         if (!taskId || !jobType) {
@@ -319,6 +347,7 @@
             taskId: taskId,
             jobType: jobType,
             section: section,
+            activity: activity,
             remarks: remarks
         }, function (res) {
             $('#btnConfirmStart').prop('disabled', false);
@@ -362,23 +391,13 @@
         });
     });
 
-    $('#taskSelect').on('change', (x, y) => {
+    $('#taskSelect').on('change', (x) => {
         getProjectDetail(x.target.value);
     });
 
-    function formatSeconds(totalSeconds) {
-        const duration = moment.duration(totalSeconds, 'seconds');
-        const hours = Math.floor(duration.asHours()); 
-        const minutes = duration.minutes();
-        const seconds = duration.seconds();
-
-        const parts = [
-            hours > 0 ? `${hours}h` : null,
-            minutes > 0 ? `${minutes}m` : null,
-            seconds > 0 ? `${seconds}s` : null
-        ].filter(Boolean); // Removes all null entries
-        return parts.join(' ') || '0s';
-    }
+    $('#sectionSelect').on('change', (x) => {
+        loadActivityDropdown(x.target.value);
+    });
 
     function getProjectDetail(uid) {
         $.get('@Url.Action("GetProjectDetail")', { unique_id: uid }, (res) => {

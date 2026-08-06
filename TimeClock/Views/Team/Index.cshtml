@@ -1,0 +1,187 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="content-wrapper">
+    <div class="container mt-4">
+        <section class="content-header">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-0">Team Members</h4>
+                </div>
+                <span class="btn btn-primary float-right" id="btnStartMember">Start Task<br /><small>(for member)</small></span>
+            </div>
+        </section>
+        <section class="content">
+            <div class="col-lg-12 col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            My Team Members Latest Activity
+                        </h3>
+                        <small class="badge badge-warning float-right" id="lastUpdateText"></small>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm table-striped" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>Badge ID</th>
+                                    <th>Name</th>
+                                    <th>Total Duration<br />Today</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+<div id="modalMemberTask"></div>
+
+<!-- START TASK MODAL -->
+<div class="modal fade" id="modalDetailMemberActivity">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Summary <span id="memberName">Member</span> Activity</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped" id="tblMember">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Project Title</th>
+                            <th>Job Type</th>
+                            <th>Start</th>
+                            <th>Stop</th>
+                            <th>Duration</th>
+                            <th>Activity</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tbl = null;
+    var tblMember = null;
+    $(document).ready(function () {
+        tbl = new DataTable($('#historyTable'), {
+            scrollX: true,
+            "columnDefs": [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+        });
+
+        tblMember = new DataTable($('#tblMember'), {
+            scrollX: true,
+            "columnDefs": [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+        });
+
+        GetMemberList();
+        setInterval(GetMemberList, 3*60*1000); //in miliseconds
+    });
+    $(document).on('keydown', function (e) {
+        if (e.key === "Escape" || e.keyCode === 27) {
+            if ($('#modalDetailMemberActivity').is(':visible')) {
+                $('#modalDetailMemberActivity').modal('hide');
+            }
+        }
+    });
+
+    function GetMemberList() {
+        $.get('/Team/GetMemberList', {}, (res) => {
+            if (res.flag == 'success') {
+                tbl.clear().draw();
+                for (var i = 0; i < res.data.length; i++) {
+                    tbl.row.add([
+                        res.data[i].badgeId,
+                        '<a href="#" onclick="getMemberTaskDetail(\'' + res.data[i].badgeId +'\')">'+res.data[i].fullName + '</a>',
+                        res.data[i].duration == 0 ? '<span class="badge badge-danger">No Task Running</span>' : formatSeconds(res.data[i].duration) + '<br/><span class="btn btn-danger btn-xs" onclick="stopTaskMember(\'' + res.data[i].badgeId + '\')">Stop Activity</span>'
+                    ]);
+                }
+                tbl.draw();
+                $('#lastUpdateText').html('Last update at ' + moment().format('H:mm:ss'));
+            } else if (res.flag == 'error') {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function getMemberTaskDetail(badge) {
+        $.get('/Team/GetMemberTaskDetail', { badgeId: badge }, (res) => {
+            if (res.flag == 'success') {
+                tblMember.clear().draw();
+                if (res.data.length > 0) {
+                    $('#memberName').html(res.data[0].fullName);
+                    for (var i = 0; i < res.data.length; i++) {
+                        tblMember.row.add([
+                            i+1,
+                            res.data[i].taskTitle,
+                            res.data[i].jobType,
+                            moment(res.data[i].startDatetime).format('DD MMM YYYY HH:mm:ss'),
+                            res.data[i].stopDatetime ? moment(res.data[i].stopDatetime).format('DD MMM YYYY HH:mm:ss') : '-',
+                            res.data[i].duration ? formatSeconds(res.data[i].duration) : '-',
+                            res.data[i].activity,
+                            res.data[i].remarks
+                        ]);
+                    }
+                } else {
+                    $('#memberName').html('Member');
+                }
+                tblMember.draw();
+                $('#modalDetailMemberActivity').modal('show');
+            } else if (res.flag == 'error') {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function stopTaskMember(badge) {
+        jConfirm('Are you sure want to stop activity for this user Badge ID? Badge ID: ' + badge, 'Info', (e) => {
+            if (e) {
+                $.post('/Tracker/StopTaskMember', { badgeId: badge }, (res) => {
+                    if (res.flag == 'success') {
+                        notify('Member activity stopped.', 'success');
+                        jAlert(res.msg, 'Info', () => {
+                            GetMemberList()
+                        });
+                    } else {
+                        notify(res.msg, res.flag);
+                        console.log(res.data);
+                    }
+                });
+            }
+        });
+    }
+
+    $('#btnStartMember').on('click', (e) => {
+        e.preventDefault();
+        $.get('/Team/StartTaskMember', {}, (res) => {
+            if (res.flag) {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            } else {
+                $('#modalMemberTask').html(res);
+            }
+        }).fail(() => {
+            notify('An error occured because of the network instability. Please try again.', 'error');
+        });
+    });
+</script>

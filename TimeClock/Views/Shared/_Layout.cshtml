@@ -112,11 +112,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
             opacity: 0.5;
             z-index: 99990;
         }
-/*
+
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
             background-color: #007bff;
             border-color: #006fe6;
-        }*/
+        }
+
+
+        .content-wrapper {
+            min-height: 80vh !important; /* Forces the main content area to fill the screen viewport */
+        }
     </style>
 
 </head>
@@ -126,6 +131,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </div>
     <div class="wrapper">
         @Html.Partial("~/Views/Shared/_TopNavBar.cshtml")
+        @Html.Partial("~/Views/Shared/_LeftSideBar.cshtml")
 
         @RenderBody()
 
@@ -138,20 +144,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </div>
 
     <script>
-        $(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
-            if (jqXHR.status === 401) {
-                // Session expired! Redirect them to your login page.
-                // Adjust the URL to match your actual login route
-                window.location.href = '/Login/Index?ReturnUrl=' + encodeURIComponent(window.location.pathname);
-            }
-        });
         $(document).ready(function () {
             if ('@TempData["message"]'.trim()) {
                 let type = '@TempData["code"]'.trim() ?? 'info';
                 notify('@TempData["message"]', type);
             }
 
-        }).on('select2:open', () => {
+            $(document).ajaxError(function (event, jqXHR, ajaxSettings, thrownError) {
+                debugger;
+                if (jqXHR.status === 401) {
+                    // Session expired! Redirect them to your login page.
+                    // Adjust the URL to match your actual login route
+                    window.location.href = '/Login/Index?ReturnUrl=' + encodeURIComponent(window.location.pathname);
+                } else {
+                    notify('An error occurred. Please try again. Error code ' + jqXHR.status, 'error');
+                    // Optional: Log the actual error to the console for debugging
+                    console.error("AJAX Error on " + ajaxSettings.url + ": ", thrownError);
+                }
+            });
+        })
+
+        $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
 
@@ -228,6 +241,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
             } else {
                 toastr["info"](msg);
             }
+        }
+
+        //convert from second into H m s
+        function formatSeconds(totalSeconds) {
+            const duration = moment.duration(totalSeconds, 'seconds');
+            const hours = Math.floor(duration.asHours());
+            const minutes = duration.minutes();
+            const seconds = duration.seconds();
+
+            const parts = [
+                hours > 0 ? `${hours}h` : null,
+                minutes > 0 ? `${minutes}m` : null,
+                seconds > 0 ? `${seconds}s` : null
+            ].filter(Boolean); // Removes all null entries
+            return parts.join(' ') || '0s';
         }
     </script>
 

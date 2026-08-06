@@ -18,6 +18,20 @@
           <Property Name="dateStart" Type="datetime" />
           <Property Name="dateStop" Type="datetime" />
         </EntityType>
+        <EntityType Name="TblInternalActivityOnly">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="title" Type="nvarchar(max)" />
+          <Property Name="reqDepartment" Type="nvarchar(max)" />
+          <Property Name="requestor" Type="nvarchar(max)" />
+          <Property Name="objective" Type="nvarchar(max)" />
+          <Property Name="siteLoc" Type="nvarchar(max)" />
+          <Property Name="status" Type="nvarchar(max)" />
+          <Property Name="statusSummary" Type="nvarchar(max)" />
+          <Property Name="priority" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="TblProjectSubmission">
           <Key>
             <PropertyRef Name="unique_id" />
@@ -50,6 +64,15 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="roleName" Type="varchar" MaxLength="50" />
           <Property Name="roleLevel" Type="int" />
+        </EntityType>
+        <EntityType Name="TblSectionActivity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="section" Type="varchar" MaxLength="100" />
+          <Property Name="activity" Type="varchar" MaxLength="100" />
+          <Property Name="dlt" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TblTaskByIndividual">
           <Key>
@@ -115,6 +138,7 @@
           <Property Name="taskId" Type="varchar(max)" />
           <Property Name="taskTitle" Type="varchar(max)" />
           <Property Name="remarks" Type="varchar(max)" />
+          <Property Name="activity" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="TblUsers">
           <Key>
@@ -130,6 +154,7 @@
           <Property Name="levelPosition" Type="int" Nullable="false" />
           <Property Name="superiorId" Type="int" />
           <Property Name="isActive" Type="bit" Nullable="false" />
+          <Property Name="subMemberBadgeIds" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="TblWorkOperational">
           <Key>
@@ -162,8 +187,10 @@
         </EntityType>
         <EntityContainer Name="TaskLogModelStoreContainer">
           <EntitySet Name="TblActivityLog" EntityType="Self.TblActivityLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblInternalActivityOnly" EntityType="Self.TblInternalActivityOnly" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblProjectSubmission" EntityType="Self.TblProjectSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblRoles" EntityType="Self.TblRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TblSectionActivity" EntityType="Self.TblSectionActivity" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblTaskByIndividual" EntityType="Self.TblTaskByIndividual" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblTaskBySuperior" EntityType="Self.TblTaskBySuperior" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TblUserActivity" EntityType="Self.TblUserActivity" Schema="dbo" store:Type="Tables" />
@@ -179,10 +206,12 @@
           <EntitySet Name="TblRoles" EntityType="TaskLogModel.TblRoles" />
           <EntitySet Name="TblTaskByIndividual" EntityType="TaskLogModel.TblTaskByIndividual" />
           <EntitySet Name="TblTaskBySuperior" EntityType="TaskLogModel.TblTaskBySuperior" />
-          <EntitySet Name="TblUserActivity" EntityType="TaskLogModel.TblUserActivity" />
           <EntitySet Name="TblWorkOperational" EntityType="TaskLogModel.TblWorkOperational" />
           <EntitySet Name="TblProjectSubmission" EntityType="TaskLogModel.TblProjectSubmission" />
           <EntitySet Name="TblUsers" EntityType="TaskLogModel.TblUsers" />
+          <EntitySet Name="TblInternalActivityOnly" EntityType="TaskLogModel.TblInternalActivityOnly" />
+          <EntitySet Name="TblSectionActivity" EntityType="TaskLogModel.TblSectionActivity" />
+          <EntitySet Name="TblUserActivity" EntityType="TaskLogModel.TblUserActivity" />
         </EntityContainer>
         <EntityType Name="TblActivityLog">
           <Key>
@@ -254,22 +283,6 @@
           <Property Name="deletedAt" Type="DateTime" Precision="3" />
           <Property Name="deletedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
-        <EntityType Name="TblUserActivity">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="jobType" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="badgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="fullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="section" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="startDatetime" Type="DateTime" Precision="3" />
-          <Property Name="stopDatetime" Type="DateTime" Precision="3" />
-          <Property Name="duration" Type="Int32" />
-          <Property Name="taskId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="TblWorkOperational">
           <Key>
             <PropertyRef Name="Id" />
@@ -338,6 +351,47 @@
           <Property Name="levelPosition" Type="Int32" Nullable="false" />
           <Property Name="superiorId" Type="Int32" />
           <Property Name="isActive" Type="Boolean" Nullable="false" />
+          <Property Name="subMemberBadgeIds" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TblInternalActivityOnly">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="reqDepartment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="requestor" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="objective" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="siteLoc" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="statusSummary" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="priority" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="TblSectionActivity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="section" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="activity" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="dlt" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TblUserActivity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="jobType" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="badgeId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="fullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="section" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="startDatetime" Type="DateTime" Precision="3" />
+          <Property Name="stopDatetime" Type="DateTime" Precision="3" />
+          <Property Name="duration" Type="Int32" />
+          <Property Name="taskId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="activity" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -419,23 +473,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="TblUserActivity">
-            <EntityTypeMapping TypeName="TaskLogModel.TblUserActivity">
-              <MappingFragment StoreEntitySet="TblUserActivity">
-                <ScalarProperty Name="remarks" ColumnName="remarks" />
-                <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />
-                <ScalarProperty Name="taskId" ColumnName="taskId" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="stopDatetime" ColumnName="stopDatetime" />
-                <ScalarProperty Name="startDatetime" ColumnName="startDatetime" />
-                <ScalarProperty Name="section" ColumnName="section" />
-                <ScalarProperty Name="fullName" ColumnName="fullName" />
-                <ScalarProperty Name="badgeId" ColumnName="badgeId" />
-                <ScalarProperty Name="jobType" ColumnName="jobType" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="TblWorkOperational">
             <EntityTypeMapping TypeName="TaskLogModel.TblWorkOperational">
               <MappingFragment StoreEntitySet="TblWorkOperational">
@@ -495,6 +532,7 @@
           <EntitySetMapping Name="TblUsers">
             <EntityTypeMapping TypeName="TaskLogModel.TblUsers">
               <MappingFragment StoreEntitySet="TblUsers">
+                <ScalarProperty Name="subMemberBadgeIds" ColumnName="subMemberBadgeIds" />
                 <ScalarProperty Name="isActive" ColumnName="isActive" />
                 <ScalarProperty Name="superiorId" ColumnName="superiorId" />
                 <ScalarProperty Name="levelPosition" ColumnName="levelPosition" />
@@ -504,6 +542,49 @@
                 <ScalarProperty Name="badgeId" ColumnName="badgeId" />
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblInternalActivityOnly">
+            <EntityTypeMapping TypeName="TaskLogModel.TblInternalActivityOnly">
+              <MappingFragment StoreEntitySet="TblInternalActivityOnly">
+                <ScalarProperty Name="priority" ColumnName="priority" />
+                <ScalarProperty Name="statusSummary" ColumnName="statusSummary" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="siteLoc" ColumnName="siteLoc" />
+                <ScalarProperty Name="objective" ColumnName="objective" />
+                <ScalarProperty Name="requestor" ColumnName="requestor" />
+                <ScalarProperty Name="reqDepartment" ColumnName="reqDepartment" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="code" ColumnName="code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblSectionActivity">
+            <EntityTypeMapping TypeName="TaskLogModel.TblSectionActivity">
+              <MappingFragment StoreEntitySet="TblSectionActivity">
+                <ScalarProperty Name="dlt" ColumnName="dlt" />
+                <ScalarProperty Name="activity" ColumnName="activity" />
+                <ScalarProperty Name="section" ColumnName="section" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TblUserActivity">
+            <EntityTypeMapping TypeName="TaskLogModel.TblUserActivity">
+              <MappingFragment StoreEntitySet="TblUserActivity">
+                <ScalarProperty Name="activity" ColumnName="activity" />
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />
+                <ScalarProperty Name="taskId" ColumnName="taskId" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="stopDatetime" ColumnName="stopDatetime" />
+                <ScalarProperty Name="startDatetime" ColumnName="startDatetime" />
+                <ScalarProperty Name="section" ColumnName="section" />
+                <ScalarProperty Name="fullName" ColumnName="fullName" />
+                <ScalarProperty Name="badgeId" ColumnName="badgeId" />
+                <ScalarProperty Name="jobType" ColumnName="jobType" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -10,13 +10,13 @@
     <div class="sidebar">
         <!-- Sidebar user (optional) -->
         <div class="m-2 p-2">
-            <a href="/Home/Index" class="image">
-                <img src="~/Media/CompanyImages/cladtek_logo_new_big.png" alt="Cladtek Logo" class="brand-image" style="opacity: .8; width: 200px">
+            <a href="/Tracker/Index" class="image">
+                <img src="~/Media/cladtek_logo.png" alt="Cladtek Logo" class="brand-image" style="opacity: .8; width: 200px">
             </a>
         </div>
 
         <!-- SidebarSearch Form -->
-        <div class="form-inline">
+        <div class="form-inline" hidden>
             <div class="input-group" data-widget="sidebar-search">
                 <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
                 <div class="input-group-append">
@@ -28,23 +28,24 @@
         </div>
 
         <!-- Sidebar Menu -->
-        <!--<nav class="mt-2">
+        <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <li class="nav-header">MISCELLANEOUS</li>
+                <li class="nav-header">Team Members</li>
                 <li class="nav-item">
-                    <a href="~/AdminLTE-3.2.0/iframe.html" class="nav-link">
-                        <i class="nav-icon fas fa-ellipsis-h"></i>
-                        <p>Tabbed IFrame Plugin</p>
+                    <a href="/Team/Index" class="nav-link">
+                        <i class="nav-icon fas fa-user-friends"></i>
+                        <p>Team Members</p>
                     </a>
                 </li>
+                @*<li class="nav-header">MISCELLANEOUS</li>
                 <li class="nav-item">
                     <a href="https://adminlte.io/docs/3.1/" class="nav-link">
                         <i class="nav-icon fas fa-file"></i>
                         <p>Documentation</p>
                     </a>
-                </li>
+                </li>*@
             </ul>
-        </nav>-->
+        </nav>
         <!-- /.sidebar-menu -->
 
     </div>

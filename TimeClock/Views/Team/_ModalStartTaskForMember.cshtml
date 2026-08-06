@@ -1,0 +1,237 @@
+﻿@{ var oMember = ViewBag.MemberList as List<SelectListItem>; }
+
+@Html.AntiForgeryToken()
+<!-- START TASK MODAL -->
+<div class="modal fade" id="startTaskModal" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Start Task</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div id="jobTypeNotice" class="alert alert-warning" style="display:none;">
+                    Outside working hours / weekend: only <strong>Operational</strong> is available.
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Member Badge ID and Name</label>
+                    @Html.DropDownList("memberSelect", oMember, new { @id = "memberSelect", @class = "select2 select2-primary", @multiple = "multiple" })
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Project Name</label>
+                    @Html.DropDownList("taskSelect", new List<SelectListItem>(), new { @id = "taskSelect", @class = "select2" })
+                </div>
+                <div id="projectDescription" class="alert alert-secondary">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Activity Section Type</label>
+                    @Html.DropDownList("sectionSelect", new List<SelectListItem>(), new { @id = "sectionSelect", @class = "select2" })
+                </div>
+
+                <div class="form-group">
+                    <label>Job Type</label>
+                    <div class="justify-content-around" style="display: flex">
+                        <div class="icheck-primary d-inline">
+                            <input type="radio" id="jobTypeDev" name="jobType" checked="" value="Development">
+                            <label for="jobTypeDev">Development</label>
+                        </div>
+                        <div class="icheck-primary d-inline">
+                            <input type="radio" id="jobTypeOps" name="jobType" checked="" value="Operational">
+                            <label for="jobTypeOps">Operational</label>
+                        </div>
+                        @*<div class="form-check form-check-inline">
+                            <input class="form-check-input icheck-primary" type="radio" name="jobType" id="jobTypeDev" value="Development">
+                            <label class="form-check-label" for="jobTypeDev">Development</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input icheck-primary" type="radio" name="jobType" id="jobTypeOps" value="Operational">
+                            <label class="form-check-label" for="jobTypeOps">Operational</label>
+                        </div>*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Activity</label>
+                    @Html.DropDownList("activitySelect", new List<SelectListItem>(), new { @id = "activitySelect", @class = "select2" })
+                </div>
+                <div class="form-group">
+                    <label>Remarks (optional)</label>
+                    <textarea id="remarksInput" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div id="startTaskError" class="alert alert-danger" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button id="btnConfirmStart" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#startTaskModal').modal('show');
+        $('#activitySelect').html('<option value="">-</option>').trigger('change');
+    });
+
+    $('#startTaskModal').on('show.bs.modal', function () {
+
+        $('#startTaskError').hide();
+        $('#remarksInput').val('');
+        loadTaskDropdown();
+        applyJobTypeRules();
+        loadSectionDropdown();
+        $('#projectDescription').hide();
+
+        $('.select2').css('width', '100%');
+        $('.select2').select2({ dropdownParent: $('#startTaskModal'), theme: 'bootstrap4' });
+    });
+
+    function antiForgeryToken() {
+        return $('input[name="__RequestVerificationToken"]').val();
+    }
+
+    function loadTaskDropdown() {
+        $.get('/Tracker/GetTaskList', function (res) {
+            if (res.flag == 'success') {
+                var opts = res.data.map(function (t) {
+                    return '<option value="' + t.Id + '">' + t.taskTitle + '</option>';
+                }).join('');
+                opts = '<option value="">-</option>' + opts;
+                $('#taskSelect').html(opts);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function loadSectionDropdown() {
+        $.get('/Tracker/GetSection', function (res) {
+            if (res.flag == 'success') {
+                var opts = res.data.map(function (t) {
+                    return '<option value="' + t + '">' + t + '</option>';
+                }).join('');
+                opts = '<option value="">-</option>' + opts;
+                $('#sectionSelect').html(opts);
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function applyJobTypeRules() {
+        $.get('/Tracker/GetJobTypeOptions', function (res) {
+            if (res.flag == 'success') {
+                var allowed = res.data;
+
+                $('#jobTypeDev, #jobTypeOps').prop('disabled', false).prop('checked', false);
+
+                if (allowed.indexOf('Development') === -1) {
+                    $('#jobTypeDev').prop('disabled', true);
+                    $('#jobTypeOps').prop('checked', true);
+                    $('#jobTypeNotice').show();
+                } else {
+                    $('#jobTypeNotice').hide();
+                }
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function loadActivityDropdown(section) {
+        $.get('/Tracker/GetActivityType', { section: section }, function (res) {
+            if (res.flag == 'success') {
+                var opts = res.data.map(function (t) {
+                    return '<option value="' + t + '">' + t + '</option>';
+                }).join('');
+                opts = '<option value="">-</option>' + opts;
+                $('#activitySelect').html(opts).trigger('change');
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    $('#btnConfirmStart').on('click', function (e) {
+        e.preventDefault();
+        var memberBadgeId = $('#memberSelect').val().join(',');
+        if (!memberBadgeId) {
+            notify('Please fill atleast one member.', 'error')
+            return;
+        }
+        var taskId = $('#taskSelect').val();
+        var section = $('#sectionSelect').val();
+        var activity = $('#activitySelect').val();
+        var jobType = $('input[name="jobType"]:checked').val();
+        var remarks = $('#remarksInput').val();
+
+        if (!taskId || !jobType) {
+            $('#startTaskError').text('Please select a task and job type.').show();
+            return;
+        }
+
+        $(this).prop('disabled', true);
+
+        $.post('/Tracker/StartTaskForMember', {
+            __RequestVerificationToken: antiForgeryToken(),
+            memberBadgeId: memberBadgeId,
+            taskId: taskId,
+            jobType: jobType,
+            section: section,
+            activity: activity,
+            remarks: remarks
+        }, function (res) {
+            $('#btnConfirmStart').prop('disabled', false);
+            notify(res.msg, res.flag);
+            console.log(res.data);
+            if (res.flag == 'success') {
+                GetMemberList();
+                $('#startTaskModal').modal('hide');
+            } else {
+                $('#startTaskError').text(res.msg).show();
+            }
+        }).fail(function () {
+            $('#btnConfirmStart').prop('disabled', false);
+            $('#startTaskError').text('Unexpected error, please try again.').show();
+        });
+    });
+
+    $('#taskSelect').on('change', (x) => {
+        if (!x || x == '-') return;
+        getProjectDetail(x.target.value);
+    });
+
+    $('#sectionSelect').on('change', (x) => {
+        if (!x || x == '-') return;
+        loadActivityDropdown(x.target.value);
+    });
+
+    function getProjectDetail(uid) {
+        $.get('/Tracker/GetProjectDetail', { unique_id: uid }, (res) => {
+            var content = "";
+            if (res.flag == 'success') {
+                content = '<p><b>Requesting Department</b> : ' + res.data.requesting_department
+                    + '<br/><b>Project Initiator</b> : ' + (res.data.project_initiator ?? '-')
+                    + '<br/><b>Site</b> : ' + (res.data.site_location ?? '-')
+                    + '<br/><b>Objective</b> : ' + (res.data.strategy_objective ?? '-') + '</p>'
+                $('#projectDescription').html(content);
+                $('#projectDescription').show();
+            } else {
+                $('#projectDescription').html('');
+                $('#projectDescription').hide();
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        }).fail(() => {
+            $('#projectDescription').hide();
+            notify('An error occured because of the network instability. Please try again.', 'error');
+        });
+    }
+</script>
+

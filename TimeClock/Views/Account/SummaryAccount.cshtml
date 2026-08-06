@@ -93,6 +93,13 @@
         });
     }
 
+    function setStatusAcc(id) {
+        $.get('@Url.Action("ActivateAccount")', { id: id }, (res) => {
+            notify(res.msg, res.flag);
+            console.log(res.data);
+        });
+    }
+    
     function resPass(id) {
         $.get('@Url.Action("ResetPassword")', { id: id }, (res) => {
             notify(res.msg, res.flag);

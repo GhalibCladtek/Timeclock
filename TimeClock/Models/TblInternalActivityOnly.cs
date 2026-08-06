@@ -12,18 +12,16 @@ namespace TimeClock.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class TblUsers
+    public partial class TblInternalActivityOnly
     {
-        public int Id { get; set; }
-        public string username { get; set; }
-        public string password { get; set; }
-        public string badgeId { get; set; }
-        public string fullName { get; set; }
+        public string code { get; set; }
         public string title { get; set; }
-        public string role { get; set; }
-        public int levelPosition { get; set; }
-        public Nullable<int> superiorId { get; set; }
-        public bool isActive { get; set; }
-        public string subMemberBadgeIds { get; set; }
+        public string reqDepartment { get; set; }
+        public string requestor { get; set; }
+        public string objective { get; set; }
+        public string siteLoc { get; set; }
+        public string status { get; set; }
+        public string statusSummary { get; set; }
+        public string priority { get; set; }
     }
 }

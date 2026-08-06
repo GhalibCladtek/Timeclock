@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using TimeClock.Models;
 
 namespace TimeClock.Helpers
 {
@@ -7,7 +9,7 @@ namespace TimeClock.Helpers
     {
         // Adjust to your actual working hours / shift pattern.
         private static readonly TimeSpan WorkStart = new TimeSpan(8, 0, 0);
-        private static readonly TimeSpan WorkEnd = new TimeSpan(17, 0, 0);
+        private static readonly TimeSpan WorkEnd = new TimeSpan(20, 0, 0);
 
         public static bool IsWeekend(DateTime dt)
             => dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday;

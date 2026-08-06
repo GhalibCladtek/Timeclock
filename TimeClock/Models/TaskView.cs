@@ -44,4 +44,21 @@ namespace TimeClock.Models
         public const string Paused = "paused";
         public const string Finish = "finished";
     }
+
+    public class Members
+    {
+        public string badgeId { get; set; }
+        public string fullName { get; set; }
+        public int duration { get; set; }
+        public string remarks { get; set; }
+        public List<TblUserActivity> activity { get; set; }
+    }
+
+    public class StopActionForMembers
+    {
+        public string badgeId { get; set; }
+        public string fullName { get; set; }
+        public bool success { get; set; }
+        public string msg { get; set; }
+    }
 }

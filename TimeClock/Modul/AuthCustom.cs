@@ -79,8 +79,9 @@ public class CustomSessionAuthorizeAttribute : AuthorizeAttribute
         // Check if it's an AJAX request. If so, return a 401 status code instead of a redirect
         if (filterContext.HttpContext.Request.IsAjaxRequest())
         {
-            filterContext.HttpContext.Response.StatusCode = 401;
-            filterContext.HttpContext.Response.End();
+            //filterContext.HttpContext.Response.StatusCode = 401;
+            //filterContext.HttpContext.Response.End();
+            filterContext.Result = new HttpStatusCodeResult(401, "Session Expired");
         }
         else
         {

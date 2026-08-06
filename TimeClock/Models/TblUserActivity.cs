@@ -25,5 +25,6 @@ namespace TimeClock.Models
         public string taskId { get; set; }
         public string taskTitle { get; set; }
         public string remarks { get; set; }
+        public string activity { get; set; }
     }
 }

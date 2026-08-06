@@ -152,7 +152,7 @@
     $('button[id*=Eye]').on('click', (e) => {
         debugger;
         $input = $('#' + e.currentTarget.id.replaceAll('Eye', ''));
-        
+
         if ($(e.currentTarget).html().includes('slash')) {
             $(e.currentTarget).html('<i class="fas fa-eye"></i>')
             $input.prop('type', 'text');
@@ -163,27 +163,58 @@
 
     });
 
-    $('#btnUpdatePass').on('click', (e) => {
-        e.preventDefault();
+    // Helper function to show errors directly under the specific input group
+    function showError(inputId, message) {
+        $(inputId).closest('.input-group').after('<small class="text-danger pass-error mt-1 d-block">' + message + '</small>');
+        isValid = false;
+    }
 
-        if ($('#pass').val().length == 0 || $('#pass1').val().length == 0 || $('#pass2').val().length == 0) {
-            notify('Please fill the password.', 'warning');
-            return;
+    // 2. Form Validation on Save Button Click
+    $('#btnUpdatePass').on('click', function (e) {
+        e.preventDefault(); // Prevent accidental form submission
+
+        // Clear any previous error messages
+        $('.pass-error').remove();
+
+        let oldPass = $('#pass').val();
+        let newPass = $('#pass1').val();
+        let confirmPass = $('#pass2').val();
+        let isValid = true;
+
+        // Rule A: Old password cannot be empty
+        if (oldPass.trim() === '') {
+            showError('#pass', 'Please enter your current password.');
         }
 
-        if ($('#pass1').val() !== $('#pass2').val() || $('#pass1').val().length !== $('#pass2').val().length) {
-            notify('Password does not macth!.', 'warning');
-            return;
+        // Rule B: New password must be at least 4 characters
+        if (newPass.length < 4) {
+            showError('#pass1', 'New password must be at least 4 characters long.');
         }
 
-        $.post('@Url.Action("UpdatePassword")', {
-            id: (@user.Id)
-            , oldPass: $('#pass').val()
-            , newPass: $('#pass1').val()
-            , confirmPass: $('#pass2').val()
-        }, (res) => {
-            notify(res.msg, res.flag);
-            console.log(res.data);
-        });
-    })
+        // Rule C: Confirm password must exactly match the new password
+        if (confirmPass === '') {
+            showError('#pass2', 'Please confirm your new password.');
+        } else if (newPass !== confirmPass) {
+            showError('#pass2', 'Passwords do not match.');
+        }
+
+        // --- Final Submission ---
+
+        if (isValid) {
+            $.post('@Url.Action("UpdatePassword")', {
+                id: (@user.Id)
+                , oldPass: $('#pass').val()
+                , newPass: $('#pass1').val()
+                , confirmPass: $('#pass2').val()
+            }, (res) => {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            });
+        }
+    });
+
+    // Optional: Real-time clearing of errors as the user types
+    $('#pass, #pass1, #pass2').on('input', function () {
+        $(this).closest('.form-group').find('.pass-error').remove();
+    });
 </script>

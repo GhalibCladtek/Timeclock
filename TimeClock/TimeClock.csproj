@@ -153,6 +153,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\TrackerController.cs" />
     <Compile Include="Controllers\WorkOperationController.cs" />
     <Compile Include="Global.asax.cs">
@@ -178,10 +179,16 @@
     <Compile Include="Models\TblActivityLog.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TblInternalActivityOnly.cs">
+      <DependentUpon>TaskLogDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\TblProjectSubmission.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TblRoles.cs">
+      <DependentUpon>TaskLogDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TblSectionActivity.cs">
       <DependentUpon>TaskLogDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TblTaskByIndividual.cs">
@@ -2141,6 +2148,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Media\cladtek_logo.png" />
     <Content Include="Models\TaskLogDb.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>TaskLogDb.edmx</DependentUpon>
@@ -2329,6 +2337,9 @@
     <Content Include="Views\Account\SummaryAccount.cshtml" />
     <Content Include="Views\Account\_AddEditAccount.cshtml" />
     <Content Include="Views\Account\MyProfile.cshtml" />
+    <Content Include="Views\Shared\_LeftSideBar.cshtml" />
+    <Content Include="Views\Team\Index.cshtml" />
+    <Content Include="Views\Team\_ModalStartTaskForMember.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
