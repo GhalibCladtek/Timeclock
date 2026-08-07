@@ -26,31 +26,26 @@ namespace TimeClock.Controllers
 
             using (var db = new TaskLogEntities())
             {
-                var user = db.TblUsers.FirstOrDefault(x=> x.Id == userId);
+                var user = db.TblUsers.FirstOrDefault(x => x.Id == userId);
                 if (user == null)
                     return Json(new { flag = JsonResponseStandart.failed, msg = "Invalid user or account has been deleted.", data = "" }, JsonRequestBehavior.AllowGet);
 
                 var membersBadgeId = user.subMemberBadgeIds;
 
-                if(string.IsNullOrWhiteSpace(membersBadgeId))
+                if (string.IsNullOrWhiteSpace(membersBadgeId))
                     return Json(new { flag = JsonResponseStandart.failed, msg = "You dont have any members", data = "" }, JsonRequestBehavior.AllowGet);
 
-                var oMembersBadgeID = membersBadgeId.Split(',').Where(x=> !string.IsNullOrWhiteSpace(x)).ToList();
-                if(oMembersBadgeID.Count == 0)
+                var oMembersBadgeID = membersBadgeId.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                if (oMembersBadgeID.Count == 0)
                     return Json(new { flag = JsonResponseStandart.failed, msg = "You dont have any members", data = "" }, JsonRequestBehavior.AllowGet);
 
                 var memberList = new List<TblUsers>();
-                foreach(var i in oMembersBadgeID)
-                {
-                    var member = GetSubordinateMember(i);
-                    memberList.AddRange(member);
-                }
-
-                var oMember = memberList.Select(x=> new SelectListItem { Text = x.badgeId + " - " + x.fullName, Value = x.badgeId }).ToList();
+                var member = GetSubordinateMember(user.badgeId);
+                memberList.AddRange(member);
+                var oMember = memberList.Select(x => new SelectListItem { Text = x.badgeId + " - " + x.fullName, Value = x.badgeId }).ToList();
                 ViewBag.MemberList = oMember;
                 return PartialView("_ModalStartTaskForMember");
             }
-
         }
 
         [HttpGet]
@@ -101,7 +96,7 @@ namespace TimeClock.Controllers
                     return Json(new { flag = JsonResponseStandart.success, msg = "", data = lastTaskMember }, JsonRequestBehavior.AllowGet);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { flag = JsonResponseStandart.failed, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
@@ -114,10 +109,10 @@ namespace TimeClock.Controllers
 
             if (!userId.HasValue)
                 return Json(new { flag = JsonResponseStandart.failed, msg = "Session expired. Please log in again.", data = "" }, JsonRequestBehavior.AllowGet);
-            
+
             if (string.IsNullOrWhiteSpace(badgeId))
                 return Json(new { flag = JsonResponseStandart.failed, msg = "Please fill the badge Id first.", data = "" }, JsonRequestBehavior.AllowGet);
-            
+
             try
             {
                 using (var db = new TaskLogEntities())
@@ -126,7 +121,7 @@ namespace TimeClock.Controllers
                     return Json(new { flag = JsonResponseStandart.success, msg = "", data = task }, JsonRequestBehavior.AllowGet);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { flag = JsonResponseStandart.failed, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }

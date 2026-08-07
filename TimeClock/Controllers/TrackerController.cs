@@ -190,7 +190,6 @@ namespace TimeClock.Controllers
                         return Json(new { flag = JsonResponseStandart.failed, msg = "You don't have any member.", data = "" });
 
                     var members = TeamController.GetSubordinateMember(superiorAccount.badgeId);
-                    members.RemoveAt(0);
 
                     var resultList = new List<StopActionForMembers>();
                     foreach (var i in membersBadgeIs)

@@ -204,5 +204,53 @@ namespace TimeClock.Controllers
                 return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        [AllowAnonymous]
+        public ActionResult CheckRunningTask()
+        {
+            try
+            {
+                var taskLog = new List<TblUserActivity>();
+                using (var db = new TaskLogEntities())
+                {
+                    var taskNotStopped = db.TblUserActivity.Where(x => x.stopDatetime == null).ToList();
+                    if(taskNotStopped.Count == 0)
+                        return Json(new { flag = JsonResponseStandart.failed, msg = "There is no task running right now.", data = "" }, JsonRequestBehavior.AllowGet);
+
+                    var now = DateTime.Now;
+                    foreach(var i in taskNotStopped)
+                    {
+                        var duration = (now - i.startDatetime.Value).TotalSeconds;
+                        if(duration > 12 * 60 * 60)
+                        {
+                            i.stopDatetime = now;
+                            i.duration = (int)duration;
+                            taskLog.Add(i);
+                        }
+                    }
+                    db.SaveChanges();
+                }
+
+                var data = taskLog.Select(x => new { 
+                    x.badgeId
+                    , x.fullName
+                    , x.jobType
+                    , x.taskTitle
+                    , start = x.startDatetime.HasValue ? x.startDatetime.Value.ToString("dd MMM yyyy HH:mm:ss") : "-"
+                    , stop = x.stopDatetime.HasValue ? x.stopDatetime.Value.ToString("dd MMM yyyy HH:mm:ss")  : "-"
+                    , x.activity
+                    , x.remarks
+                }).ToList();
+                
+                if(taskLog.Count == 0)
+                    return Json(new { flag = JsonResponseStandart.success, msg = "Task checked successfully. But there is no task need to be stopped.", data = "[]" }, JsonRequestBehavior.AllowGet);
+                
+                return Json(new { flag = JsonResponseStandart.success, msg = "Task checked successfully", data }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }
