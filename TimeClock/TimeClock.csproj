@@ -2340,6 +2340,7 @@
     <Content Include="Views\Shared\_LeftSideBar.cshtml" />
     <Content Include="Views\Team\Index.cshtml" />
     <Content Include="Views\Team\_ModalStartTaskForMember.cshtml" />
+    <Content Include="Views\Team\TaskLog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

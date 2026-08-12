@@ -113,7 +113,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -201,7 +201,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -249,7 +249,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
         [AllowAnonymous]
@@ -293,7 +293,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
     }

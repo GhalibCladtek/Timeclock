@@ -110,7 +110,7 @@
                 for (var i = 0; i < res.data.length; i++) {
                     tbl.row.add([
                         res.data[i].badgeId,
-                        '<a href="#" onclick="getMemberTaskDetail(\'' + res.data[i].badgeId +'\')">'+res.data[i].fullName + '</a>',
+                        '<a href="#" onclick="event.preventDefault(); getMemberTaskDetail(\'' + res.data[i].badgeId +'\')">'+res.data[i].fullName + '</a>',
                         res.data[i].duration == 0 ? '<span class="badge badge-danger">No Task Running</span>' : formatSeconds(res.data[i].duration) + '<br/><span class="btn btn-danger btn-xs" onclick="stopTaskMember(\'' + res.data[i].badgeId + '\')">Stop Activity</span>'
                     ]);
                 }

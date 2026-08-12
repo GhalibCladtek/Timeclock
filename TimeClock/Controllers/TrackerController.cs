@@ -220,7 +220,7 @@ namespace TimeClock.Controllers
             }
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
 
         }
@@ -278,7 +278,7 @@ namespace TimeClock.Controllers
             } 
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -300,7 +300,7 @@ namespace TimeClock.Controllers
             } 
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
         
@@ -319,7 +319,7 @@ namespace TimeClock.Controllers
             } 
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -428,7 +428,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.InnerException?.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message} {ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
     }

@@ -28,7 +28,7 @@ namespace TimeClock.Controllers
             }
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = ex.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -64,7 +64,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = ex.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
         
@@ -137,7 +137,7 @@ namespace TimeClock.Controllers
             }
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = ex.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
         
@@ -158,7 +158,7 @@ namespace TimeClock.Controllers
             }
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = ex.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -207,6 +207,7 @@ namespace TimeClock.Controllers
                             Session["FullName"] = data.fullName;
                             Session["Title"] = data.title;
                             Session["LevelPos"] = data.levelPosition;
+                            Session["IsLeader"] = !string.IsNullOrWhiteSpace(data.subMemberBadgeIds);
 
                             return Json(new { flag = JsonResponseStandart.success, msg = "Profile updated!", data = "" });
                         } else
@@ -276,7 +277,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = JsonResponseStandart.errorMsg(ex.InnerException?.Message), data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.error, msg = JsonResponseStandart.errorMsg(ex.Message), data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -308,7 +309,7 @@ namespace TimeClock.Controllers
             }
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = JsonResponseStandart.errorMsg(ex.InnerException?.Message), data = ex.ToString() });
+                return Json(new { flag = JsonResponseStandart.error, msg = JsonResponseStandart.errorMsg(ex.Message), data = ex.ToString() });
             }
         }
 
@@ -339,7 +340,7 @@ namespace TimeClock.Controllers
             }
             catch(Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.error, msg = JsonResponseStandart.errorMsg(ex.InnerException?.Message), data = ex.ToString() });
+                return Json(new { flag = JsonResponseStandart.error, msg = JsonResponseStandart.errorMsg(ex.Message), data = ex.ToString() });
             }
         }
         #endregion

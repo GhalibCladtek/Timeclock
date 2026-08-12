@@ -39,6 +39,7 @@ namespace TimeClock.Controllers
                             Session["FullName"] = data.fullName;
                             Session["Title"] = data.title;
                             Session["LevelPos"] = data.levelPosition;
+                            Session["IsLeader"] = !string.IsNullOrWhiteSpace(data.subMemberBadgeIds);
 
                             if (rememberMe)
                             {

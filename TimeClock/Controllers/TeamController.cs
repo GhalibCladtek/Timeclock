@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -98,7 +99,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.failed, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.failed, msg = ex.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -123,7 +124,7 @@ namespace TimeClock.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { flag = JsonResponseStandart.failed, msg = ex.InnerException?.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { flag = JsonResponseStandart.failed, msg = ex.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -188,5 +189,86 @@ namespace TimeClock.Controllers
                 }
             }
         }
+
+        #region TaskLog
+        public ActionResult TaskLog()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult GetTaskLog(string startD, string stopD)
+        {
+            try
+            {
+                var now = DateTime.Now;
+                var userId = (int?)Session["Id"];
+                var startDate = DateTime.Parse(startD);
+                var stopDate = DateTime.Parse(stopD);
+
+                if (!userId.HasValue)
+                    return Json(new { flag = JsonResponseStandart.failed, msg = "Session expired. Please log in again.", data = "" }, JsonRequestBehavior.AllowGet);
+
+                using (var db = new TaskLogEntities())
+                {
+                    var user = db.TblUsers.FirstOrDefault(x => x.Id == userId);
+                    if (user == null)
+                        return Json(new { flag = JsonResponseStandart.failed, msg = "Invalid user or account has been deleted.", data = "" }, JsonRequestBehavior.AllowGet);
+
+                    var membersBadgeId = user.subMemberBadgeIds;
+
+                    if (string.IsNullOrWhiteSpace(membersBadgeId))
+                        return Json(new { flag = JsonResponseStandart.failed, msg = "You dont have any members", data = "" }, JsonRequestBehavior.AllowGet);
+                    var members = GetSubordinateMember(user.badgeId);
+                    if (members.Count == 0)
+                        return Json(new { flag = JsonResponseStandart.failed, msg = "You dont have any members", data = "" }, JsonRequestBehavior.AllowGet);
+
+                    members.RemoveAll(x=> x.badgeId == user.badgeId);
+
+                    var memberBadgeIds = members.Select(x => x.badgeId).ToList();
+
+                    var query = db.TblUserActivity
+                        .Where(t => memberBadgeIds.Contains(t.badgeId) 
+                        && (
+                            DbFunctions.TruncateTime(t.startDatetime) >= DbFunctions.TruncateTime(startDate) 
+                            && 
+                            DbFunctions.TruncateTime(t.startDatetime) <= DbFunctions.TruncateTime(stopDate)
+                            )
+                        )
+                        .OrderByDescending(t => t.startDatetime).ToList();
+
+                    var total = query.Count;
+                    var items = query
+                        .Select(t => new
+                        {
+                            t.Id,
+                            t.badgeId,
+                            t.fullName,
+                            t.taskTitle,
+                            t.jobType,
+                            t.startDatetime,
+                            t.stopDatetime,
+                            duration = t.duration ?? (int)(now - t.startDatetime.Value).TotalSeconds,
+                            t.remarks,
+                            t.activity
+                        })
+                        .ToList();
+
+                    if (total > 0)
+                    {
+                        return Json(new { flag = JsonResponseStandart.success, msg = "Task Log fetched.", data = items }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new { flag = JsonResponseStandart.failed, msg = "Task Log not found.", data = "" }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                return Json(new { flag = JsonResponseStandart.error, msg = ex.Message, data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
     }
 }

@@ -55,6 +55,7 @@ public class CustomSessionAuthorizeAttribute : AuthorizeAttribute
                             httpContext.Session["FullName"] = data.fullName;
                             httpContext.Session["Title"] = data.title;
                             httpContext.Session["LevelPos"] = data.levelPosition;
+                            httpContext.Session["IsLeader"] = !string.IsNullOrWhiteSpace(data.subMemberBadgeIds);
 
                             // Authorization passes! The user doesn't even know their session had died.
                             return true;

@@ -1,0 +1,255 @@
+﻿
+@{
+    ViewBag.Title = "Task Logs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="mb-0">Team Members</h4>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="col-lg-12 col-md-6 col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        My Team Members Tasks Log
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-around">
+                        <div class="col-4">
+                            <label for="drpick" class="control-label">Searh by Date</label>
+                        </div>
+                        <div class="col-4">
+                            <input id="drpick" name="drpick" class="form-control datepick" />
+                        </div>
+                        <div class="col-4">
+                            <span class="btn btn-primary" id="btnSearch"><i class="fas fa-search"></i> Search</span>
+                            @*<span class="btn btn-success float-right" id="btnExportExcel"><i class="fas fa-file-excel"></i> Export</span>*@
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-12">
+                        <table class="table table-sm table-striped" id="tblTasks">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Badge ID</th>
+                                    <th>Name</th>
+                                    <th>Task Title</th>
+                                    <th>Job Type</th>
+                                    <th>Start</th>
+                                    <th>Stop</th>
+                                    <th>Duration</th>
+                                    <th>Activity</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+<script>
+    var tbl = null;
+
+    $(document).ready(function () {
+        tbl = new DataTable($('#tblTasks'), {
+            scrollX: true,
+            columnDefs: [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+            layout: {
+                top1End: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'btn btn-success',
+                            text: 'Export to Excel',
+                            filename: 'TaskLog - ' + moment().format('YYYY-MM-DD_HH.mm.ss'),
+
+                            customize: function (xlsx) {
+                                var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                                var styles = xlsx.xl['styles.xml'];
+
+                                // ==========================================
+                                // 1. ADD LIGHT GRAY FILL (For Zebra Striping)
+                                // ==========================================
+                                var fills = $('fills', styles);
+                                var fillCount = parseInt(fills.attr('count'));
+                                // FFF2F2F2 is Excel's hex code for standard light gray
+                                fills.append('<fill><patternFill patternType="solid"><fgColor rgb="FFF2F2F2"/></patternFill></fill>');
+                                fills.attr('count', fillCount + 1);
+                                var fillGrayId = fillCount; // Save the ID of our new fill
+
+                                // ==========================================
+                                // 2. ADD THIN BORDERS
+                                // ==========================================
+                                var borders = $('borders', styles);
+                                var borderCount = parseInt(borders.attr('count'));
+                                borders.append('<border><left style="thin"/><right style="thin"/><top style="thin"/><bottom style="thin"/></border>');
+                                borders.attr('count', borderCount + 1);
+                                var borderThinId = borderCount; // Save the ID of our new border
+
+                                // ==========================================
+                                // 3. CLONE STYLES (To preserve dates/numbers)
+                                // ==========================================
+                                var cellXfs = $('cellXfs', styles);
+                                var xfCount = parseInt(cellXfs.attr('count'));
+                                var styleMap = {};
+
+                                // We loop through all default styles and create two new versions of each:
+                                // One with just a border (for odd rows), and one with a border + fill (for even rows)
+                                $('xf', cellXfs).each(function (index) {
+                                    var $xf = $(this);
+
+                                    // A: Create "Odd Row" style (Border only)
+                                    var $oddStyle = $xf.clone();
+                                    $oddStyle.attr('borderId', borderThinId).attr('applyBorder', '1');
+                                    cellXfs.append($oddStyle);
+                                    var oddId = xfCount++;
+
+                                    // B: Create "Even Row" style (Border + Gray Fill)
+                                    var $evenStyle = $xf.clone();
+                                    $evenStyle.attr('borderId', borderThinId).attr('applyBorder', '1');
+                                    $evenStyle.attr('fillId', fillGrayId).attr('applyFill', '1');
+                                    cellXfs.append($evenStyle);
+                                    var evenId = xfCount++;
+
+                                    // Save mapping so we know which styles to swap later
+                                    styleMap[index] = { odd: oddId, even: evenId };
+                                });
+
+                                cellXfs.attr('count', xfCount); // Update the total styles count
+
+                                // ==========================================
+                                // 4. APPLY STYLES TO THE EXCEL ROWS
+                                // ==========================================
+                                $('row', sheet).each(function (rowIndex) {
+                                    var $row = $(this);
+
+                                    // Row 0 is the Header. 
+                                    // Check if the row index is an even number (2, 4, 6...)
+                                    var isEvenRow = (rowIndex !== 0 && rowIndex % 2 === 0);
+
+                                    $row.find('c').each(function () {
+                                        var $cell = $(this);
+                                        // Get the original style (or default to 0)
+                                        var originalStyle = $cell.attr('s') || 0;
+
+                                        // Overwrite it with our mapped custom style
+                                        if (isEvenRow) {
+                                            $cell.attr('s', styleMap[originalStyle].even);
+                                        } else {
+                                            $cell.attr('s', styleMap[originalStyle].odd);
+                                        }
+                                    });
+                                });
+
+                                // ==========================================
+                                // 5. AUTO-FILTER INJECTION
+                                // ==========================================
+                                var totalRows = $('row', sheet).length;
+                                // Starts at A1 to ensure the headers get the filter arrows!
+                                var fullRange = 'A2:J' + totalRows;
+                                $('sheetData', sheet).after('<autoFilter ref="' + fullRange + '"/>');
+                            },
+
+                            exportOptions: {
+                                //format: {
+                                //    // 1. CHANGE THE COLUMN NAME (HEADER)
+                                //    header: function (data, column, node) {
+                                //        if (column === 7) {
+                                //            return 'Duration (Seconds)';
+                                //        }
+                                //        return data;
+                                //    },
+
+                                //    // 2. CHANGE THE CELL DATA (BODY)
+                                //    body: function (data, row, column, node) {
+                                //        if (column === 7 && data) {
+                                //            let h = 0, m = 0, s = 0;
+                                //            const hMatch = data.match(/(\d+)\s*h/);
+                                //            const mMatch = data.match(/(\d+)\s*m/);
+                                //            const sMatch = data.match(/(\d+)\s*s/);
+
+                                //            if (hMatch) h = parseInt(hMatch[1], 10);
+                                //            if (mMatch) m = parseInt(mMatch[1], 10);
+                                //            if (sMatch) s = parseInt(sMatch[1], 10);
+
+                                //            return (h * 3600) + (m * 60) + s;
+                                //        }
+                                //        return data;
+                                //    }
+                                //}
+                            }
+                        }
+                    ]
+                }
+            }
+        });
+
+
+        $('#drpick').flatpickr({
+            mode: "range",
+            altInput: true,
+            altFormat: "j M Y",
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            defaultDate: ["today", "today"]
+        });
+
+        loadLog();
+    });
+
+    $('#btnSearch').on('click', (e) => {
+        e.preventDefault();
+        loadLog();
+    });
+
+    function loadLog() {
+        var dateRange = getDateRange();
+        $.get('/Team/GetTaskLog', { startD: dateRange[0], stopD: dateRange[1] }, function (res) {
+            if (res.flag == 'success') {
+                tbl.clear().draw();
+                for (var i = 0; i < res.data.length; i++) {
+                    tbl.row.add([
+                        i + 1,
+                        res.data[i].badgeId,
+                        res.data[i].fullName,
+                        res.data[i].taskTitle,
+                        res.data[i].jobType,
+                        moment(res.data[i].startDatetime).format('DD MMM YYYY HH:mm:ss'),
+                        res.data[i].stopDatetime ? moment(res.data[i].stopDatetime).format('DD MMM YYYY HH:mm:ss') : '-',
+                        res.data[i].duration ? formatSeconds(res.data[i].duration) : '-',
+                        res.data[i].activity ?? '-',
+                        res.data[i].remarks ?? '-',
+                    ]);
+                }
+                tbl.draw();
+            } else {
+                notify(res.msg, res.flag);
+                console.log(res.data);
+            }
+        });
+    }
+
+    function getDateRange() {
+        var drpick = $('#drpick').val().split(' ');
+        var result = [];
+        result.push(drpick[0]);
+        result.push(drpick[2] ?? drpick[0]);
+        return result;
+    }
+
+</script>
