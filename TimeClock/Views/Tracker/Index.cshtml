@@ -21,6 +21,10 @@
                     <h4 class="mb-0">@ViewBag.FullName</h4>
                     <small class="text-muted">Badge: @ViewBag.BadgeId &middot; @ViewBag.Section</small>
                 </div>
+                <div>
+                    <h5>Today Duration</h5>
+                    <small id="todayDur"></small>
+                </div>
             </div>
         </section>
         <section class="content">
@@ -157,6 +161,7 @@
         });
         $('#projectDescription').hide();
         $('#activitySelect').html('<option value="">-</option>').trigger('change');
+        getSummaryTime();
     });
 
     $('#startTaskModal').on('show.bs.modal', function () {
@@ -357,6 +362,7 @@
                 if (res.data) {
                     showRunningPanel(res.data);
                     loadHistory();
+                    getSummaryTime();
                 } else {
                     $('#startTaskError').text("Task was not found.").show();
                 }
@@ -421,4 +427,14 @@
             notify('An error occured because of the network instability. Please try again.', 'error');
         });
     }
+
+    function getSummaryTime() {
+        $.get('/Tracker/GetSummaryTimeToday', function (res) {
+            if (res.flag == 'success') {
+                var dur = formatSeconds(res.data);
+                $('#todayDur').html('~ ' + dur);
+            }
+        })
+    }
+
 </script>

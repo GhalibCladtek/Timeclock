@@ -417,11 +417,13 @@ namespace TimeClock.Controllers
                 var badgeId = Session["BadgeId"] as string;
                 using (var db = new TaskLogEntities())
                 {
-                    var project = db.TblUserActivity.Where(x=> x.badgeId == badgeId && x.startDatetime >= DateTime.Today).Sum(x=> x.duration.Value);
-                    if (project == null)
-                        return Json(new { flag = JsonResponseStandart.failed, msg = "Project not found.", data = "" }, JsonRequestBehavior.AllowGet);
-
-                    return Json(new { flag = JsonResponseStandart.success, msg = "Project found.", data = project }, JsonRequestBehavior.AllowGet);
+                    var projects = db.TblUserActivity.Where(x=> x.badgeId == badgeId && x.startDatetime >= DateTime.Today).ToList();
+                    var duration = 0;
+                    foreach(var i in projects)
+                    {
+                        duration += i.duration ?? (int)(DateTime.Now - i.startDatetime.Value).TotalSeconds;
+                    }
+                    return Json(new { flag = JsonResponseStandart.success, msg = "Data summary time today retrieved.", data = duration }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)

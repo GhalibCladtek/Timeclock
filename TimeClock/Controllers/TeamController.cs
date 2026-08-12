@@ -82,7 +82,7 @@ namespace TimeClock.Controllers
                     var oMember = memberList.Select(x => new SelectListItem { Text = x.badgeId + " - " + x.fullName, Value = x.badgeId }).ToList();
 
                     var lastTaskMember = new List<Members>();
-                    foreach (var i in memberList)
+                    foreach (var i in memberList.Distinct())
                     {
                         var task = db.TblUserActivity.Where(x => x.badgeId == i.badgeId && x.startDatetime >= DateTime.Today).ToList();
 
