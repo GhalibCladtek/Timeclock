@@ -14,110 +14,6 @@ namespace TimeClock.Controllers
         public ApiService api = new ApiService();
 
         [AllowAnonymous]
-        public ActionResult SyncProjectList()
-        {
-            try
-            {
-                var submissionsData = api.GetSubmissions();
-
-                if (submissionsData != null && submissionsData.Count > 0)
-                {
-                    using (var db = new TaskLogEntities())
-                    {
-                        using (var transaction = db.Database.BeginTransaction())
-                        {
-                            try
-                            {
-                                var existingDbProjects = db.TblProjectSubmission.ToDictionary(x => x.unique_id);
-                                var apiProjectIds = new HashSet<string>(submissionsData.Select(x => x.unique_id));
-
-                                var projectsToDelete = existingDbProjects.Values.Where(local => !apiProjectIds.Contains(local.unique_id)).ToList();
-
-                                if (projectsToDelete.Any())
-                                {
-                                    db.TblProjectSubmission.RemoveRange(projectsToDelete);
-                                }
-
-                                var idTemp = 0;
-                                foreach (var i in submissionsData)
-                                {
-                                    if (i.status_summary == "Identification- Requested") continue;
-                                    idTemp++;
-                                    if (existingDbProjects.TryGetValue(i.unique_id, out var project))
-                                    {
-                                        // Update Existing
-                                        project.project_title = i.project_title;
-                                        project.requesting_department = i.requesting_department;
-                                        project.project_initiator = i.project_initiator;
-                                        project.strategy_objective = i.strategy_objective;
-                                        project.site_location = i.site_location;
-                                        project.problem_statement = i.problem_statement;
-                                        project.status = i.status;
-                                        project.status_summary = i.status_summary;
-                                        project.priority = i.priority;
-                                        project.cumulative_percentage = i.cumulative_percentage;
-                                        project.budget_planned = i.budget_planned;
-                                        project.budget_actual = i.budget_actual;
-                                        project.budget_remaining = i.budget_remaining;
-                                        project.budget_status = i.budget_status;
-                                        project.otd = i.otd;
-                                        project.planned_start_date = i.planned_start_date;
-                                        project.planned_completion_date = i.planned_completion_date;
-                                        project.actual_start_date = i.actual_start_date;
-                                        project.actual_completion_date = i.actual_completion_date;
-                                    }
-                                    else
-                                    {
-                                        // Insert New
-                                        var newProj = new TblProjectSubmission
-                                        {
-                                            unique_id = i.unique_id,
-                                            project_title = i.project_title,
-                                            requesting_department = i.requesting_department,
-                                            project_initiator = i.project_initiator,
-                                            strategy_objective = i.strategy_objective,
-                                            site_location = i.site_location,
-                                            problem_statement = i.problem_statement,
-                                            status = i.status,
-                                            status_summary = i.status_summary,
-                                            priority = i.priority,
-                                            cumulative_percentage = i.cumulative_percentage,
-                                            budget_planned = i.budget_planned,
-                                            budget_actual = i.budget_actual,
-                                            budget_remaining = i.budget_remaining,
-                                            budget_status = i.budget_status,
-                                            otd = i.otd,
-                                            planned_start_date = i.planned_start_date,
-                                            planned_completion_date = i.planned_completion_date,
-                                            actual_start_date = i.actual_start_date,
-                                            actual_completion_date = i.actual_completion_date
-                                        };
-
-                                        db.TblProjectSubmission.Add(newProj);
-                                    }
-                                }
-
-                                db.SaveChanges();
-                                transaction.Commit();
-                            }
-                            catch (Exception)
-                            {
-                                transaction.Rollback();
-                                throw;
-                            }
-                        }
-                    }
-                }
-
-                return Json(new { flag = JsonResponseStandart.success, msg = "Sync success" }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        [AllowAnonymous]
         public ActionResult SyncProjects()
         {
             try
@@ -252,49 +148,54 @@ namespace TimeClock.Controllers
                 return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
-        [AllowAnonymous]
-        public ActionResult StopAllTask()
-        {
-            try
-            {
-                var taskLog = new List<TblUserActivity>();
-                using (var db = new TaskLogEntities())
-                {
-                    var taskNotStopped = db.TblUserActivity.Where(x => x.stopDatetime == null).ToList();
-                    if(taskNotStopped.Count == 0)
-                        return Json(new { flag = JsonResponseStandart.failed, msg = "There is no task running right now.", data = "" }, JsonRequestBehavior.AllowGet);
+        
 
-                    var now = DateTime.Now;
-                    foreach(var i in taskNotStopped)
-                    {
-                        var duration = (now - i.startDatetime.Value).TotalSeconds;
-                        i.stopDatetime = now;
-                        i.duration = (int)duration;
-                        taskLog.Add(i);
-                    }
-                    db.SaveChanges();
-                }
 
-                var data = taskLog.Select(x => new { 
-                    x.badgeId
-                    , x.fullName
-                    , x.jobType
-                    , x.taskTitle
-                    , start = x.startDatetime.HasValue ? x.startDatetime.Value.ToString("dd MMM yyyy HH:mm:ss") : "-"
-                    , stop = x.stopDatetime.HasValue ? x.stopDatetime.Value.ToString("dd MMM yyyy HH:mm:ss")  : "-"
-                    , x.activity
-                    , x.remarks
-                }).ToList();
+        //[AllowAnonymous]
+        //public ActionResult StopAllTask()
+        //{
+        //    try
+        //    {
+        //        var taskLog = new List<TblUserActivity>();
+        //        using (var db = new TaskLogEntities())
+        //        {
+        //            var taskNotStopped = db.TblUserActivity.Where(x => x.stopDatetime == null).ToList();
+        //            if(taskNotStopped.Count == 0)
+        //                return Json(new { flag = JsonResponseStandart.failed, msg = "There is no task running right now.", data = "" }, JsonRequestBehavior.AllowGet);
+
+        //            var now = DateTime.Now;
+        //            foreach(var i in taskNotStopped)
+        //            {
+        //                var duration = (now - i.startDatetime.Value).TotalSeconds;
+        //                i.stopDatetime = now;
+        //                i.duration = (int)duration;
+        //                taskLog.Add(i);
+        //            }
+        //            db.SaveChanges();
+        //        }
+
+        //        var data = taskLog.Select(x => new { 
+        //            x.badgeId
+        //            , x.fullName
+        //            , x.jobType
+        //            , x.taskTitle
+        //            , start = x.startDatetime.HasValue ? x.startDatetime.Value.ToString("dd MMM yyyy HH:mm:ss") : "-"
+        //            , stop = x.stopDatetime.HasValue ? x.stopDatetime.Value.ToString("dd MMM yyyy HH:mm:ss")  : "-"
+        //            , x.activity
+        //            , x.remarks
+        //        }).ToList();
                 
-                if(taskLog.Count == 0)
-                    return Json(new { flag = JsonResponseStandart.success, msg = "Action completed, But there is no task need to be stopped.", data = "[]" }, JsonRequestBehavior.AllowGet);
+        //        if(taskLog.Count == 0)
+        //            return Json(new { flag = JsonResponseStandart.success, msg = "Action completed, But there is no task need to be stopped.", data = "[]" }, JsonRequestBehavior.AllowGet);
                 
-                return Json(new { flag = JsonResponseStandart.success, msg = "All task stopped.", data }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
-            }
-        }
+        //        return Json(new { flag = JsonResponseStandart.success, msg = "All task stopped.", data }, JsonRequestBehavior.AllowGet);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { flag = JsonResponseStandart.error, msg = $"{ex.Message}\n{ex.Message}", data = ex.ToString() }, JsonRequestBehavior.AllowGet);
+        //    }
+        //}
+
+
     }
 }

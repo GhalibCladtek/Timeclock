@@ -261,7 +261,7 @@
         $.get('/Tracker/GetTaskList', function (res) {
             if (res.flag == 'success') {
                 var opts = res.data.map(function (t) {
-                    return '<option value="' + t.Id + '">' + t.taskTitle + '</option>';
+                    return '<option value="' + t.Id + '">' + t.Id + ' | ' + t.taskTitle +  '</option>';
                 }).join('');
                 opts = '<option value="">-</option>' + opts;
                 $('#taskSelect').html(opts);

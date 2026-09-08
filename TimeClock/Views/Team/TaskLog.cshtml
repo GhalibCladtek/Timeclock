@@ -47,6 +47,7 @@
                                     <th>Start</th>
                                     <th>Stop</th>
                                     <th>Duration</th>
+                                    <th>Duration (mins)</th>
                                     <th>Activity</th>
                                     <th>Remarks</th>
                                 </tr>
@@ -232,6 +233,7 @@
                         moment(res.data[i].startDatetime).format('DD MMM YYYY HH:mm:ss'),
                         res.data[i].stopDatetime ? moment(res.data[i].stopDatetime).format('DD MMM YYYY HH:mm:ss') : '-',
                         res.data[i].duration ? formatSeconds(res.data[i].duration) : '-',
+                        res.data[i].duration ? Math.round(res.data[i].duration/60) : '-',
                         res.data[i].activity ?? '-',
                         res.data[i].remarks ?? '-',
                     ]);
