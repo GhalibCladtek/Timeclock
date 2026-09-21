@@ -29,8 +29,8 @@ namespace TimeClock.Helpers
         public static List<string> GetAllowedJobTypes(DateTime dt)
         {
             return IsWithinWorkingHours(dt)
-                ? new List<string> { "Development", "Operational" }
-                : new List<string> { "Operational" };
+                ? new List<string> { "Development", "Operational", "Project" }
+                : new List<string> { "Operational", "Project" };
         }
     }
 }

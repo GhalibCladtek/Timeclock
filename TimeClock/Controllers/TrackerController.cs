@@ -75,7 +75,7 @@ namespace TimeClock.Controllers
         // POST: Tracker/StartTask
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult StartTask(string taskId, string jobType, string section, string activity, string remarks)
+        public JsonResult StartTask(string taskId, string jobType, string section, string activity, string remarks, string cpxNo)
         {
             try
             {
@@ -125,7 +125,8 @@ namespace TimeClock.Controllers
                         taskId = task.unique_id,
                         taskTitle = task.project_title,
                         remarks = remarks,
-                        activity = activity
+                        activity = activity,
+                        cpxNumber = string.IsNullOrWhiteSpace(cpxNo) ? null : cpxNo 
                     };
 
                     db.TblUserActivity.Add(log);
@@ -244,7 +245,9 @@ namespace TimeClock.Controllers
                     .Select(t => new
                     {
                         t.Id,
+                        t.taskId,
                         t.taskTitle,
+                        t.cpxNumber,
                         t.jobType,
                         t.startDatetime,
                         t.stopDatetime,

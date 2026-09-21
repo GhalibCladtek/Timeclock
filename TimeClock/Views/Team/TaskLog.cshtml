@@ -42,7 +42,8 @@
                                     <th>No</th>
                                     <th>Badge ID</th>
                                     <th>Name</th>
-                                    <th>Task Title</th>
+                                    <th>Project Name</th>
+                                    <th>Capex Number</th>
                                     <th>Job Type</th>
                                     <th>Start</th>
                                     <th>Stop</th>
@@ -165,35 +166,6 @@
                                 var fullRange = 'A2:J' + totalRows;
                                 $('sheetData', sheet).after('<autoFilter ref="' + fullRange + '"/>');
                             },
-
-                            exportOptions: {
-                                //format: {
-                                //    // 1. CHANGE THE COLUMN NAME (HEADER)
-                                //    header: function (data, column, node) {
-                                //        if (column === 7) {
-                                //            return 'Duration (Seconds)';
-                                //        }
-                                //        return data;
-                                //    },
-
-                                //    // 2. CHANGE THE CELL DATA (BODY)
-                                //    body: function (data, row, column, node) {
-                                //        if (column === 7 && data) {
-                                //            let h = 0, m = 0, s = 0;
-                                //            const hMatch = data.match(/(\d+)\s*h/);
-                                //            const mMatch = data.match(/(\d+)\s*m/);
-                                //            const sMatch = data.match(/(\d+)\s*s/);
-
-                                //            if (hMatch) h = parseInt(hMatch[1], 10);
-                                //            if (mMatch) m = parseInt(mMatch[1], 10);
-                                //            if (sMatch) s = parseInt(sMatch[1], 10);
-
-                                //            return (h * 3600) + (m * 60) + s;
-                                //        }
-                                //        return data;
-                                //    }
-                                //}
-                            }
                         }
                     ]
                 }
@@ -229,6 +201,7 @@
                         res.data[i].badgeId,
                         res.data[i].fullName,
                         res.data[i].taskTitle,
+                        res.data[i].cpxNumber ?? '-',
                         res.data[i].jobType,
                         moment(res.data[i].startDatetime).format('DD MMM YYYY HH:mm:ss'),
                         res.data[i].stopDatetime ? moment(res.data[i].stopDatetime).format('DD MMM YYYY HH:mm:ss') : '-',

@@ -139,6 +139,7 @@
           <Property Name="taskTitle" Type="varchar(max)" />
           <Property Name="remarks" Type="varchar(max)" />
           <Property Name="activity" Type="varchar(max)" />
+          <Property Name="cpxNumber" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="TblUsers">
           <Key>
@@ -392,6 +393,7 @@
           <Property Name="taskTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="activity" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cpxNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -574,6 +576,7 @@
           <EntitySetMapping Name="TblUserActivity">
             <EntityTypeMapping TypeName="TaskLogModel.TblUserActivity">
               <MappingFragment StoreEntitySet="TblUserActivity">
+                <ScalarProperty Name="cpxNumber" ColumnName="cpxNumber" />
                 <ScalarProperty Name="activity" ColumnName="activity" />
                 <ScalarProperty Name="remarks" ColumnName="remarks" />
                 <ScalarProperty Name="taskTitle" ColumnName="taskTitle" />

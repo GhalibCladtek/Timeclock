@@ -26,5 +26,6 @@ namespace TimeClock.Models
         public string taskTitle { get; set; }
         public string remarks { get; set; }
         public string activity { get; set; }
+        public string cpxNumber { get; set; }
     }
 }

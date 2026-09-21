@@ -64,7 +64,9 @@
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Task Title</th>
+                                <th>Project ID</th>
+                                <th>Project Name</th>
+                                <th>Capex Number</th>
                                 <th>Job Type</th>
                                 <th>Start</th>
                                 <th>Stop</th>
@@ -83,7 +85,7 @@
 
 <!-- START TASK MODAL -->
 <div class="modal fade" id="startTaskModal" data-backdrop="static">
-    <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Start Task</h5>
@@ -91,19 +93,30 @@
             </div>
             <div class="modal-body">
                 <div id="jobTypeNotice" class="alert alert-warning" style="display:none;">
-                    Outside working hours / weekend: only <strong>Operational</strong> is available.
+                    Outside working hours / weekend: only <strong>Operational</strong> and <strong>Project</strong> is available.
                 </div>
 
                 <div class="form-group">
                     <label class="control-label">Project Name</label>
                     @Html.DropDownList("taskSelect", new List<SelectListItem>(), new { @id = "taskSelect", @class = "select2" })
                 </div>
-                <div id="projectDescription" class="alert alert-secondary">
-                </div>
+                <div id="projectDescription" class="alert alert-secondary"></div>
                 <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label class="control-label">Capex Number</label>
+                            <input class="form-control" id="cpxNumber" placeholder="capex number"/>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="control-label">Activity Section Type</label>
+                            @Html.DropDownList("sectionSelect", responsibleSection, new { @id = "sectionSelect", @class = "select2" })
+                        </div>
+                    </div>
+                </div>
+                @*<div class="form-group">
                     <label class="control-label">Activity Section Type</label>
                     @Html.DropDownList("sectionSelect", responsibleSection, new { @id = "sectionSelect", @class = "select2" })
-                </div>
+                </div>*@
 
                 <div class="form-group">
                     <label>Job Type</label>
@@ -116,6 +129,10 @@
                             <div class="icheck-primary d-inline">
                                 <input type="radio" id="jobTypeOps" name="jobType" checked="" value="Operational">
                                 <label for="jobTypeOps">Operational</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="jobTypeProj" name="jobType" checked="" value="Project">
+                                <label for="jobTypeProj">Project</label>
                             </div>
                         </div>
                     </div>
@@ -238,8 +255,10 @@
                 tbl.clear().draw();
                 for (var i = 0; i < res.data.items.length; i++) {
                     tbl.row.add([
-                        i+1,
+                        i + 1,
+                        res.data.items[i].taskId,
                         res.data.items[i].taskTitle,
+                        res.data.items[i].cpxNumber ?? '-',
                         res.data.items[i].jobType,
                         moment(res.data.items[i].startDatetime).format('DD MMM YYYY HH:mm:ss'),
                         res.data.items[i].stopDatetime ? moment(res.data.items[i].stopDatetime).format('DD MMM YYYY HH:mm:ss') : '-',
@@ -307,7 +326,7 @@
             if (res.flag == 'success') {
                 var allowed = res.data;
 
-                $('#jobTypeDev, #jobTypeOps').prop('disabled', false).prop('checked', false);
+                $('#jobTypeDev, #jobTypeOps,#jobTypeProj').prop('disabled', false).prop('checked', false);
 
                 if (allowed.indexOf('Development') === -1) {
                     $('#jobTypeDev').prop('disabled', true);
@@ -340,6 +359,7 @@
         var jobType = $('input[name="jobType"]:checked').val();
         var activity = $('#activitySelect').val();
         var remarks = $('#remarksInput').val();
+        var cpx = $('#cpxNumber').val();
 
         if (!taskId || !jobType) {
             $('#startTaskError').text('Please select a task and job type.').show();
@@ -354,7 +374,8 @@
             jobType: jobType,
             section: section,
             activity: activity,
-            remarks: remarks
+            remarks: remarks,
+            cpxNo: cpx
         }, function (res) {
             $('#btnConfirmStart').prop('disabled', false);
             if (res.flag == 'success') {

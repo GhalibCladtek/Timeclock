@@ -3,7 +3,7 @@
 @Html.AntiForgeryToken()
 <!-- START TASK MODAL -->
 <div class="modal fade" id="startTaskModal" data-backdrop="static">
-    <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Start Task</h5>
@@ -11,7 +11,7 @@
             </div>
             <div class="modal-body">
                 <div id="jobTypeNotice" class="alert alert-warning" style="display:none;">
-                    Outside working hours / weekend: only <strong>Operational</strong> is available.
+                    Outside working hours / weekend: only <strong>Operational</strong> and <strong>Project</strong> is available.
                 </div>
 
                 <div class="form-group">
@@ -23,32 +23,43 @@
                     <label class="control-label">Project Name</label>
                     @Html.DropDownList("taskSelect", new List<SelectListItem>(), new { @id = "taskSelect", @class = "select2" })
                 </div>
-                <div id="projectDescription" class="alert alert-secondary">
-                </div>
+                <div id="projectDescription" class="alert alert-secondary"></div>
                 <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label class="control-label">Capex Number</label>
+                            <input class="form-control" id="cpxNumber" placeholder="capex number" />
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label">Activity Section Type</label>
+                                @Html.DropDownList("sectionSelect", new List<SelectListItem>(), new { @id = "sectionSelect", @class = "select2" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="form-group">
                     <label class="control-label">Activity Section Type</label>
                     @Html.DropDownList("sectionSelect", new List<SelectListItem>(), new { @id = "sectionSelect", @class = "select2" })
-                </div>
+                </div>*@
 
                 <div class="form-group">
                     <label>Job Type</label>
-                    <div class="justify-content-around" style="display: flex">
-                        <div class="icheck-primary d-inline">
-                            <input type="radio" id="jobTypeDev" name="jobType" checked="" value="Development">
-                            <label for="jobTypeDev">Development</label>
+                    <div>
+                        <div class="justify-content-around" style="display: flex">
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="jobTypeDev" name="jobType" checked="" value="Development">
+                                <label for="jobTypeDev">Development</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="jobTypeOps" name="jobType" checked="" value="Operational">
+                                <label for="jobTypeOps">Operational</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" id="jobTypeProj" name="jobType" checked="" value="Project">
+                                <label for="jobTypeProj">Project</label>
+                            </div>
                         </div>
-                        <div class="icheck-primary d-inline">
-                            <input type="radio" id="jobTypeOps" name="jobType" checked="" value="Operational">
-                            <label for="jobTypeOps">Operational</label>
-                        </div>
-                        @*<div class="form-check form-check-inline">
-                            <input class="form-check-input icheck-primary" type="radio" name="jobType" id="jobTypeDev" value="Development">
-                            <label class="form-check-label" for="jobTypeDev">Development</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input icheck-primary" type="radio" name="jobType" id="jobTypeOps" value="Operational">
-                            <label class="form-check-label" for="jobTypeOps">Operational</label>
-                        </div>*@
                     </div>
                 </div>
                 <div class="form-group">
@@ -127,7 +138,7 @@
             if (res.flag == 'success') {
                 var allowed = res.data;
 
-                $('#jobTypeDev, #jobTypeOps').prop('disabled', false).prop('checked', false);
+                $('#jobTypeDev, #jobTypeOps,#jobTypeProj').prop('disabled', false).prop('checked', false);
 
                 if (allowed.indexOf('Development') === -1) {
                     $('#jobTypeDev').prop('disabled', true);

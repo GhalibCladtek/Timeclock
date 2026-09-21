@@ -245,6 +245,7 @@ namespace TimeClock.Controllers
                             t.badgeId,
                             t.fullName,
                             t.taskTitle,
+                            t.cpxNumber,
                             t.jobType,
                             t.startDatetime,
                             t.stopDatetime,
