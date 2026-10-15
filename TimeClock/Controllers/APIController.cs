@@ -193,24 +193,24 @@ namespace TimeClock.Controllers
                     sqlParameters.Add(new System.Data.SqlClient.SqlParameter("@sitePlant", param.sitePlant));
                 }
 
-                string paramString = paramList.Any() ? "WHERE " + string.Join(" AND ", paramList) : "";
+                string paramString = paramList.Any() ? "WHERE badgeId not in ('9530','dummy','worker1','worker2','worker3') and " + string.Join(" AND ", paramList) : "WHERE badgeId not in ('9530','dummy','worker1','worker2','worker3')";
 
                 string query = $@"
-            select WeekNumber, fullName, SUM(duration) duration, taskId, taskTitle, MAX(sitePlant) as sitePlant
-            from (
-                select 
-                DATEPART(week, startDatetime) AS WeekNumber
-                , fullName
-                , startDatetime
-                , isnull(stopDatetime, getdate()) stopDatetime
-                , case when stopDatetime is null then DATEDIFF(SECOND, startDatetime, GETDATE()) else duration end as duration
-                , taskId
-                , taskTitle
-                , sitePlant
-                from TblUserActivity
-                {paramString}
-            ) a
-            group by WeekNumber, fullName, taskId, taskTitle";
+                select WeekNumber, fullName, SUM(duration) duration, taskId, taskTitle, MAX(sitePlant) as sitePlant
+                from (
+                    select 
+                    DATEPART(week, startDatetime) AS WeekNumber
+                    , fullName
+                    , startDatetime
+                    , isnull(stopDatetime, getdate()) stopDatetime
+                    , case when stopDatetime is null then DATEDIFF(SECOND, startDatetime, GETDATE()) else duration end as duration
+                    , taskId
+                    , taskTitle
+                    , sitePlant
+                    from TblUserActivity
+                    {paramString}
+                ) a
+                group by WeekNumber, fullName, taskId, taskTitle";
 
                 DateTime? startDate = null;
                 DateTime? finishDate = null;
