@@ -62,6 +62,14 @@ namespace TimeClock.Controllers
                     .Select(t => new { Id = t.unique_id, taskTitle = t.project_title })
                     .ToList();
 
+                if (nolimit)
+                {
+                    tasks = db.TblProjectSubmission
+                    .OrderBy(t => t.unique_id)
+                    .Select(t => new { Id = t.unique_id, taskTitle = t.project_title })
+                    .ToList();
+                }
+
                 if (!allowed)
                 {
                     tasks = tasks.Where(x => "MEET,OPCA,OPCBM,OPCTB,TRAIN".Split(',').Contains(x.Id)).ToList();
