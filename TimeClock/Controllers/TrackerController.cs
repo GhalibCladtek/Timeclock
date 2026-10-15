@@ -43,12 +43,21 @@ namespace TimeClock.Controllers
 
         // GET: Tracker/GetTaskList  (dropdown source - the "other table")
         [HttpGet]
-        public JsonResult GetTaskList()
+        public JsonResult GetTaskList(bool nolimit = false)
         {
             var allowed = WorkingHoursHelper.IsWithinWorkingHours(DateTime.Now);
+            var excludedStatuses = new[]
+            {
+                "BRS Phase- Completed",
+                "Testing and Validation- On Hold",
+                "Design Development Started",
+                "Testing and Validation Started"
+            };
+
             using (var db = new TaskLogEntities())
             {
                 var tasks = db.TblProjectSubmission
+                    .Where(x=> x.is_active.Value && !excludedStatuses.Contains(x.status))
                     .OrderBy(t => t.unique_id)
                     .Select(t => new { Id = t.unique_id, taskTitle = t.project_title })
                     .ToList();
@@ -126,7 +135,8 @@ namespace TimeClock.Controllers
                         taskTitle = task.project_title,
                         remarks = remarks,
                         activity = activity,
-                        cpxNumber = string.IsNullOrWhiteSpace(cpxNo) ? null : cpxNo 
+                        cpxNumber = string.IsNullOrWhiteSpace(cpxNo) ? null : cpxNo, 
+                        sitePlant = task.site_location,
                     };
 
                     db.TblUserActivity.Add(log);
@@ -240,8 +250,8 @@ namespace TimeClock.Controllers
 
                 var total = query.Count();
                 var items = query
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
+                    //.Skip((page - 1) * pageSize)
+                    //.Take(pageSize)
                     .Select(t => new
                     {
                         t.Id,
@@ -330,7 +340,7 @@ namespace TimeClock.Controllers
         // POST: Tracker/StartTask
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult StartTaskForMember(string memberBadgeId, string taskId, string jobType, string section, string activity, string remarks)
+        public JsonResult StartTaskForMember(string memberBadgeId, string taskId, string jobType, string section, string activity, string remarks, string cpxNo)
         {
             try
             {
@@ -394,8 +404,10 @@ namespace TimeClock.Controllers
                             duration = null,
                             taskId = task.unique_id,
                             taskTitle = task.project_title,
+                            cpxNumber = string.IsNullOrWhiteSpace(cpxNo) ? null : cpxNo, 
                             remarks = remarks,
-                            activity = activity
+                            activity = activity,
+                            sitePlant = task.site_location,
                         };
 
                         db.TblUserActivity.Add(log);

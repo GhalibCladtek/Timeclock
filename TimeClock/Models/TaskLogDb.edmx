@@ -56,6 +56,7 @@
           <Property Name="planned_completion_date" Type="datetime" />
           <Property Name="actual_start_date" Type="datetime" />
           <Property Name="actual_completion_date" Type="datetime" />
+          <Property Name="is_active" Type="bit" />
         </EntityType>
         <EntityType Name="TblRoles">
           <Key>
@@ -140,6 +141,7 @@
           <Property Name="remarks" Type="varchar(max)" />
           <Property Name="activity" Type="varchar(max)" />
           <Property Name="cpxNumber" Type="varchar(max)" />
+          <Property Name="sitePlant" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="TblUsers">
           <Key>
@@ -337,6 +339,7 @@
           <Property Name="planned_completion_date" Type="DateTime" Precision="3" />
           <Property Name="actual_start_date" Type="DateTime" Precision="3" />
           <Property Name="actual_completion_date" Type="DateTime" Precision="3" />
+          <Property Name="is_active" Type="Boolean" />
         </EntityType>
         <EntityType Name="TblUsers">
           <Key>
@@ -394,6 +397,7 @@
           <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="activity" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="cpxNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="sitePlant" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -508,6 +512,7 @@
           <EntitySetMapping Name="TblProjectSubmission">
             <EntityTypeMapping TypeName="TaskLogModel.TblProjectSubmission">
               <MappingFragment StoreEntitySet="TblProjectSubmission">
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
                 <ScalarProperty Name="actual_completion_date" ColumnName="actual_completion_date" />
                 <ScalarProperty Name="actual_start_date" ColumnName="actual_start_date" />
                 <ScalarProperty Name="planned_completion_date" ColumnName="planned_completion_date" />
@@ -576,6 +581,7 @@
           <EntitySetMapping Name="TblUserActivity">
             <EntityTypeMapping TypeName="TaskLogModel.TblUserActivity">
               <MappingFragment StoreEntitySet="TblUserActivity">
+                <ScalarProperty Name="sitePlant" ColumnName="sitePlant" />
                 <ScalarProperty Name="cpxNumber" ColumnName="cpxNumber" />
                 <ScalarProperty Name="activity" ColumnName="activity" />
                 <ScalarProperty Name="remarks" ColumnName="remarks" />

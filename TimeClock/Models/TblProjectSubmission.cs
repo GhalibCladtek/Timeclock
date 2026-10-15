@@ -34,5 +34,6 @@ namespace TimeClock.Models
         public Nullable<System.DateTime> planned_completion_date { get; set; }
         public Nullable<System.DateTime> actual_start_date { get; set; }
         public Nullable<System.DateTime> actual_completion_date { get; set; }
+        public Nullable<bool> is_active { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace TimeClock.Helpers
     {
         // A unique string to ensure this specific encryption can't be mixed up with others
         public const string success = "success";
+        public const string warning = "warning";
         public const string failed = "failed";
         public const string error = "error";
         public static string errorMsg(string msg)

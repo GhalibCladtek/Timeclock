@@ -197,14 +197,19 @@ namespace TimeClock.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetTaskLog(string startD, string stopD)
+        public JsonResult GetTaskLog(string startD, string stopD, string project)
         {
             try
             {
+                if(string.IsNullOrWhiteSpace(startD) && string.IsNullOrWhiteSpace(stopD) && string.IsNullOrWhiteSpace(project))
+                {
+                    return Json(new { flag = JsonResponseStandart.error, msg = "Please atleast fill project or date range first.", data = "" }, JsonRequestBehavior.AllowGet);
+                }
+
                 var now = DateTime.Now;
                 var userId = (int?)Session["Id"];
-                var startDate = DateTime.Parse(startD);
-                var stopDate = DateTime.Parse(stopD);
+                var startDate = string.IsNullOrWhiteSpace(startD) ? DateTime.MinValue : DateTime.Parse(startD);
+                var stopDate = string.IsNullOrWhiteSpace(stopD) ? DateTime.MaxValue : DateTime.Parse(stopD);
 
                 if (!userId.HasValue)
                     return Json(new { flag = JsonResponseStandart.failed, msg = "Session expired. Please log in again.", data = "" }, JsonRequestBehavior.AllowGet);
@@ -237,6 +242,11 @@ namespace TimeClock.Controllers
                         )
                         .OrderByDescending(t => t.startDatetime).ToList();
 
+                    if (!string.IsNullOrWhiteSpace(project))
+                    {
+                        query = query.Where(t => t.taskId == project).ToList();
+                    }
+
                     var total = query.Count;
                     var items = query
                         .Select(t => new
@@ -261,7 +271,7 @@ namespace TimeClock.Controllers
                     }
                     else
                     {
-                        return Json(new { flag = JsonResponseStandart.failed, msg = "Task Log not found.", data = "" }, JsonRequestBehavior.AllowGet);
+                        return Json(new { flag = JsonResponseStandart.warning, msg = "Task Log not found.", data = "" }, JsonRequestBehavior.AllowGet);
                     }
                 }
             }

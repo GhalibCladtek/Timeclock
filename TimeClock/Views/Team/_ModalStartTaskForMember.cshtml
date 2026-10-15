@@ -181,6 +181,7 @@
         var activity = $('#activitySelect').val();
         var jobType = $('input[name="jobType"]:checked').val();
         var remarks = $('#remarksInput').val();
+        var cpx = $('#cpxNumber').val();
 
         if (!taskId || !jobType) {
             $('#startTaskError').text('Please select a task and job type.').show();
@@ -196,7 +197,8 @@
             jobType: jobType,
             section: section,
             activity: activity,
-            remarks: remarks
+            remarks: remarks,
+            cpxNo: cpx
         }, function (res) {
             $('#btnConfirmStart').prop('disabled', false);
             notify(res.msg, res.flag);
